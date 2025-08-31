@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
   --background: oklch(96.22% 0.0569 95.61);
   --secondary-background: oklch(100% 0 0);
@@ -36,16 +38,37 @@
   --chart-active-dot: #fff;
 }
 
+@theme inline {
+  --color-main: var(--main);
+  --color-background: var(--background);
+  --color-secondary-background: var(--secondary-background);
+  --color-foreground: var(--foreground);
+  --color-main-foreground: var(--main-foreground);
+  --color-border: var(--border);
+  --color-overlay: var(--overlay);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
+  --spacing-boxShadowX: 2px;
+  --spacing-boxShadowY: 2px;
+  --spacing-reverseBoxShadowX: -2px;
+  --spacing-reverseBoxShadowY: -2px;
+  --radius-base: 5px;
+  --shadow-shadow: var(--shadow);
+  --font-weight-base: 500;
+  --font-weight-heading: 700;
+}
   
 @layer base {
   body {
-    color: var(--foreground);
-    font-weight: 500;
-    background: var(--background);
+    @apply text-foreground font-base bg-background;
   }
 
   h1, h2, h3, h4, h5, h6{
-    font-weight: 700;
+    @apply font-heading;
   }
 }
