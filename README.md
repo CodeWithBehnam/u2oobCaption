@@ -1,4 +1,4 @@
-# Starter.diy - Elite Next.js SaaS Starter Kit
+# u2oob.capz - Elite Next.js SaaS Starter Kit
 
 A modern, production-ready SaaS starter template for building full-stack applications using Next.js 15, Convex, Clerk, and Clerk Billing. The easiest way to start accepting payments with beautiful UI and seamless integrations.
 
@@ -304,7 +304,7 @@ npm start
 - `npm start` - Start production server
 - `npm run lint` - Run ESLint
 
-## Why Starter.diy?
+## Why u2oob.capz?
 
 **THE EASIEST TO SET UP. EASIEST IN TERMS OF CODE.**
 
@@ -329,6 +329,6 @@ This project is licensed under the MIT License.
 
 ---
 
-**Stop rebuilding the same foundation over and over.** Starter.diy eliminates weeks of integration work by providing a complete, production-ready SaaS template with authentication, payments, and real-time data working seamlessly out of the box.
+**Stop rebuilding the same foundation over and over.** u2oob.capz eliminates weeks of integration work by providing a complete, production-ready SaaS template with authentication, payments, and real-time data working seamlessly out of the box.
 
 Built with ❤️ using Next.js 15, Convex, Clerk, and modern web technologies.
