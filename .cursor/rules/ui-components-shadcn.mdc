@@ -1,0 +1,360 @@
+---
+description: Guidelines for UI development with shadcn/ui components, TailwindCSS v4, and custom component patterns
+---
+# UI Components and Shadcn Integration
+
+## Shadcn Component Installation
+
+### CRITICAL: Always Use Bun
+```bash
+# CORRECT - Always use this format
+bunx --bun shadcn@latest add [component-name]
+
+# INCORRECT - Never use these
+npx shadcn@latest add [component-name]  # ❌
+pnpm dlx shadcn@latest add [component-name]  # ❌
+```
+
+### Installation Examples
+```bash
+# Single component
+bunx --bun shadcn@latest add button
+
+# Multiple components
+bunx --bun shadcn@latest add button card drawer sheet
+
+# If dependency installation fails
+bun install [dependency-name]
+```
+
+### Pre-Installation Checks
+1. Check [components.json](mdc:components.json) for existing configuration
+2. Verify package.json after installation
+3. Ensure dependencies were added correctly
+
+## Component Structure
+
+### Base UI Components Location
+```
+components/
+├── ui/                    # Shadcn components
+│   ├── button.tsx
+│   ├── card.tsx
+│   ├── drawer.tsx
+│   ├── dropdown-menu.tsx
+│   ├── input.tsx
+│   ├── label.tsx
+│   ├── sheet.tsx
+│   ├── sidebar.tsx
+│   └── ...
+├── magicui/              # Magic UI components
+│   ├── animated-list.tsx
+│   └── pulsating-button.tsx
+├── motion-primitives/    # Animation components
+│   ├── infinite-slider.tsx
+│   └── progressive-blur.tsx
+└── kokonutui/           # Custom UI components
+    └── attract-button.tsx
+```
+
+## TailwindCSS v4 Configuration
+
+### Global Styles
+```css
+/* app/globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    /* ... other variables ... */
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    /* ... dark mode variables ... */
+  }
+}
+```
+
+### Custom Utilities
+```css
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-accordion-down {
+    animation: accordion-down 0.2s ease-out;
+  }
+  
+  .animate-accordion-up {
+    animation: accordion-up 0.2s ease-out;
+  }
+}
+```
+
+## Component Patterns
+
+### Custom Button Variants
+```typescript
+// components/ui/button.tsx
+import { cva } from "class-variance-authority";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-input bg-background hover:bg-accent",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+```
+
+### Form Components with React Hook Form
+```typescript
+// Example form with shadcn components
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+const formSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+export function LoginForm() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <div className="space-y-4">
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            {...form.register("email")}
+          />
+        </div>
+        <Button type="submit">Sign In</Button>
+      </div>
+    </form>
+  );
+}
+```
+
+### Dashboard Sidebar Pattern
+```typescript
+// app/dashboard/app-sidebar.tsx
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+
+export function AppSidebar() {
+  return (
+    <Sidebar>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="/dashboard">
+                    <span>Dashboard</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
+  );
+}
+```
+
+## Custom Component Examples
+
+### Animated List Component
+```typescript
+// components/magicui/animated-list.tsx
+"use client";
+
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+
+interface AnimatedListProps {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}
+
+export function AnimatedList({ 
+  children, 
+  className, 
+  delay = 0.1 
+}: AnimatedListProps) {
+  return (
+    <AnimatePresence>
+      <motion.div
+        className={cn("space-y-4", className)}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+```
+
+### Theme Provider Setup
+```typescript
+// components/theme-provider.tsx
+"use client";
+
+import { ThemeProvider as NextThemesProvider } from "next-themes";
+
+export function ThemeProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
+}
+
+// app/layout.tsx usage
+import { ThemeProvider } from "@/components/theme-provider";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Responsive Design Patterns
+
+### Mobile-First Approach
+```typescript
+// hooks/use-mobile.ts
+import { useMediaQuery } from "@/hooks/use-media-query";
+
+export function useMobile() {
+  return useMediaQuery("(max-width: 768px)");
+}
+
+// Component usage
+function ResponsiveComponent() {
+  const isMobile = useMobile();
+  
+  return (
+    <div className={cn(
+      "flex",
+      isMobile ? "flex-col" : "flex-row"
+    )}>
+      {/* Content */}
+    </div>
+  );
+}
+```
+
+### Responsive Grid Layouts
+```typescript
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {items.map((item) => (
+    <Card key={item.id}>
+      {/* Card content */}
+    </Card>
+  ))}
+</div>
+```
+
+## Accessibility Best Practices
+
+### ARIA Labels and Roles
+```typescript
+<Button
+  aria-label="Close dialog"
+  aria-pressed={isPressed}
+  role="button"
+>
+  <X className="h-4 w-4" />
+</Button>
+```
+
+### Keyboard Navigation
+```typescript
+<div
+  tabIndex={0}
+  onKeyDown={(e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      handleAction();
+    }
+  }}
+>
+  Interactive Element
+</div>
+```
+
+## Best Practices
+1. **Always use Bun** for shadcn installations
+2. **Check existing components** before installing new ones
+3. **Use the cn() utility** for conditional classes
+4. **Implement proper loading states** with Skeleton components
+5. **Follow mobile-first** responsive design
+6. **Ensure accessibility** with proper ARIA attributes
+7. **Use CSS variables** for theming consistency
+8. **Keep components small** and focused (< 200 lines)

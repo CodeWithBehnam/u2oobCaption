@@ -1,0 +1,263 @@
+---
+description: Clerk authentication patterns, middleware configuration, user management, and JWT setup for the SaaS application
+---
+# Clerk Authentication Guidelines
+
+## Authentication Flow Overview
+1. Clerk handles all authentication via [middleware.ts](mdc:middleware.ts)
+2. JWT tokens configured with "convex" template in Clerk dashboard
+3. Users synced to Convex via webhooks at `/api/clerk-users-webhook`
+4. Protected routes automatically redirect unauthenticated users
+
+## Middleware Configuration
+
+### Protected Routes Setup
+```typescript
+// middleware.ts
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/api/protected(.*)',
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+});
+
+export const config = {
+  matcher: [
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
+  ],
+};
+```
+
+## User Synchronization
+
+### Webhook Handler for User Events
+```typescript
+// convex/http.ts - User sync webhook
+import { Webhook } from "svix";
+
+const handleUserWebhook = httpAction(async (ctx, request) => {
+  const webhookSecret = process.env.CLERK_WEBHOOK_SECRET!;
+  
+  // Verify webhook signature
+  const svix_headers = {
+    "svix-id": request.headers.get("svix-id")!,
+    "svix-timestamp": request.headers.get("svix-timestamp")!,
+    "svix-signature": request.headers.get("svix-signature")!,
+  };
+  
+  const wh = new Webhook(webhookSecret);
+  const payload = await request.text();
+  const evt = wh.verify(payload, svix_headers) as WebhookEvent;
+  
+  // Handle user events
+  switch (evt.type) {
+    case "user.created":
+    case "user.updated":
+      await ctx.runMutation(internal.users.upsertUser, {
+        externalId: evt.data.id,
+        email: evt.data.email_addresses[0]?.email_address,
+        firstName: evt.data.first_name,
+        lastName: evt.data.last_name,
+        imageUrl: evt.data.image_url,
+      });
+      break;
+      
+    case "user.deleted":
+      await ctx.runMutation(internal.users.deleteUser, {
+        externalId: evt.data.id,
+      });
+      break;
+  }
+  
+  return new Response("OK", { status: 200 });
+});
+```
+
+## Component Authentication Patterns
+
+### Protected Page Components
+```typescript
+// app/dashboard/page.tsx
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
+export default async function DashboardPage() {
+  const { userId } = await auth();
+  
+  if (!userId) {
+    redirect("/sign-in");
+  }
+  
+  // Fetch user data with userId
+  return <Dashboard userId={userId} />;
+}
+```
+
+### Client Components with Auth
+```typescript
+// components/user-profile.tsx
+"use client";
+
+import { useAuth, useUser } from "@clerk/nextjs";
+
+export function UserProfile() {
+  const { userId, isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  
+  if (!isLoaded) return <div>Loading...</div>;
+  if (!isSignedIn) return <div>Please sign in</div>;
+  
+  return (
+    <div>
+      <img src={user?.imageUrl} alt={user?.fullName} />
+      <p>{user?.emailAddresses[0]?.emailAddress}</p>
+    </div>
+  );
+}
+```
+
+## Clerk Components Integration
+
+### Sign In/Up Components
+```typescript
+// app/sign-in/[[...sign-in]]/page.tsx
+import { SignIn } from "@clerk/nextjs";
+
+export default function SignInPage() {
+  return (
+    <SignIn 
+      appearance={{
+        elements: {
+          formButtonPrimary: "bg-primary hover:bg-primary/90",
+          card: "shadow-none",
+        },
+      }}
+      redirectUrl="/dashboard"
+    />
+  );
+}
+```
+
+### User Button Integration
+```typescript
+// components/header.tsx
+import { UserButton } from "@clerk/nextjs";
+
+export function Header() {
+  return (
+    <header>
+      <UserButton 
+        afterSignOutUrl="/"
+        appearance={{
+          elements: {
+            avatarBox: "h-10 w-10",
+          },
+        }}
+      />
+    </header>
+  );
+}
+```
+
+## JWT Configuration for Convex
+
+### Clerk Dashboard Setup
+1. Navigate to JWT Templates
+2. Create template named "convex"
+3. Copy the JWT issuer domain
+4. Add custom claims if needed:
+```json
+{
+  "email": "{{user.primary_email_address}}",
+  "name": "{{user.full_name}}",
+  "subscription": "{{user.public_metadata.subscription_status}}"
+}
+```
+
+### Convex Auth Configuration
+```typescript
+// convex/auth.config.ts
+export default {
+  providers: [{
+    domain: "https://your-clerk-domain.clerk.accounts.dev",
+    applicationID: "convex",
+  }],
+};
+```
+
+## Environment Variables
+
+### Required Clerk Variables
+```env
+# .env.local
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_live_xxxxx
+CLERK_SECRET_KEY=sk_live_xxxxx
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+CLERK_WEBHOOK_SECRET=whsec_xxxxx
+```
+
+## Authentication Hooks and Utilities
+
+### Custom Auth Hook
+```typescript
+// hooks/use-auth-user.ts
+import { useAuth } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
+export function useAuthUser() {
+  const { userId } = useAuth();
+  
+  const user = useQuery(
+    api.users.getUser,
+    userId ? { externalId: userId } : "skip"
+  );
+  
+  return {
+    user,
+    isLoading: !user && userId !== null,
+    isAuthenticated: !!userId,
+  };
+}
+```
+
+### Server-Side Auth Utilities
+```typescript
+// lib/auth.ts
+import { auth } from "@clerk/nextjs/server";
+
+export async function requireAuth() {
+  const { userId } = await auth();
+  
+  if (!userId) {
+    throw new Error("Unauthorized");
+  }
+  
+  return userId;
+}
+
+export async function getAuthUser() {
+  const { userId } = await auth();
+  return userId;
+}
+```
+
+## Best Practices
+1. **Always protect sensitive routes** in middleware
+2. **Sync user data** immediately on creation/update
+3. **Handle loading states** properly in components
+4. **Use server components** for initial auth checks
+5. **Implement proper error boundaries** for auth failures
+6. **Cache user data** appropriately with Convex
+7. **Validate webhook signatures** for security
+8. **Use TypeScript** for type-safe auth handling

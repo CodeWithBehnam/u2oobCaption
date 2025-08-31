@@ -1,0 +1,204 @@
+---
+description: Guidelines for working with Convex real-time database, including schema design, queries, mutations, and webhook handlers
+---
+# Convex Development Guidelines
+
+## Development Workflow
+1. **Always run Convex dev server**: `bunx convex dev` in a separate terminal alongside Next.js dev server
+2. **Schema changes**: Modify [convex/schema.ts](mdc:convex/schema.ts) and Convex will auto-migrate
+3. **Function changes**: Hot-reload enabled, changes apply immediately
+
+## Database Schema Patterns
+
+### User Table Structure
+```typescript
+// convex/schema.ts
+users: defineTable({
+  externalId: v.string(),  // Clerk user ID
+  email: v.string(),
+  firstName: v.string(),
+  lastName: v.string(),
+  imageUrl: v.optional(v.string()),
+  subscriptionStatus: v.optional(v.string()),
+  subscriptionPlan: v.optional(v.string()),
+  createdAt: v.number(),
+  updatedAt: v.number(),
+})
+.index("by_external_id", ["externalId"])  // Critical for Clerk sync
+```
+
+### Payment Attempts Table
+```typescript
+paymentAttempts: defineTable({
+  userId: v.string(),  // Maps to users.externalId
+  status: v.string(),
+  amount: v.number(),
+  currency: v.string(),
+  stripePaymentIntentId: v.optional(v.string()),
+  createdAt: v.number(),
+})
+.index("by_user", ["userId"])
+```
+
+## Writing Convex Functions
+
+### Query Functions
+```typescript
+// convex/users.ts
+export const getUser = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .withIndex("by_external_id", (q) => 
+        q.eq("externalId", args.userId)
+      )
+      .first();
+  },
+});
+```
+
+### Mutation Functions
+```typescript
+export const updateUser = mutation({
+  args: {
+    userId: v.string(),
+    data: v.object({
+      subscriptionStatus: v.optional(v.string()),
+      subscriptionPlan: v.optional(v.string()),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_external_id", (q) => 
+        q.eq("externalId", args.userId)
+      )
+      .first();
+    
+    if (!user) throw new Error("User not found");
+    
+    await ctx.db.patch(user._id, {
+      ...args.data,
+      updatedAt: Date.now(),
+    });
+  },
+});
+```
+
+## Webhook Handlers
+
+### HTTP Endpoints
+```typescript
+// convex/http.ts
+import { httpRouter } from "convex/server";
+import { httpAction } from "./_generated/server";
+
+const http = httpRouter();
+
+http.route({
+  path: "/clerk-users-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
+    const svix_headers = {
+      "svix-id": request.headers.get("svix-id")!,
+      "svix-timestamp": request.headers.get("svix-timestamp")!,
+      "svix-signature": request.headers.get("svix-signature")!,
+    };
+    
+    // Verify webhook signature
+    const wh = new Webhook(webhookSecret);
+    const payload = await request.text();
+    const evt = wh.verify(payload, svix_headers);
+    
+    // Handle different event types
+    switch (evt.type) {
+      case "user.created":
+      case "user.updated":
+        await ctx.runMutation(internal.users.upsertUser, {
+          data: evt.data,
+        });
+        break;
+      case "user.deleted":
+        await ctx.runMutation(internal.users.deleteUser, {
+          userId: evt.data.id,
+        });
+        break;
+    }
+    
+    return new Response("Webhook processed", { status: 200 });
+  }),
+});
+
+export default http;
+```
+
+## Client-Side Usage
+
+### React Hooks
+```typescript
+// In React components
+import { useQuery, useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
+function UserProfile() {
+  const user = useQuery(api.users.getUser, { 
+    userId: "clerk_id_here" 
+  });
+  
+  const updateUser = useMutation(api.users.updateUser);
+  
+  // Real-time updates automatically
+  if (!user) return <div>Loading...</div>;
+  
+  return <div>{user.email}</div>;
+}
+```
+
+### Authentication Context
+```typescript
+// Always use authenticated context
+import { useAuth } from "@clerk/nextjs";
+import { useConvexAuth } from "convex/react";
+
+function AuthenticatedComponent() {
+  const { userId } = useAuth();
+  const { isAuthenticated } = useConvexAuth();
+  
+  if (!isAuthenticated) return null;
+  
+  // Now safe to query user data
+  const userData = useQuery(api.users.getUser, { userId });
+}
+```
+
+## Environment Configuration
+
+### Required Variables
+```env
+# .env.local
+CONVEX_DEPLOYMENT=your_deployment_name
+NEXT_PUBLIC_CONVEX_URL=https://your-deployment.convex.cloud
+CLERK_WEBHOOK_SECRET=whsec_xxxxx  # Set in Convex dashboard
+```
+
+### JWT Configuration
+In [convex/auth.config.ts](mdc:convex/auth.config.ts):
+```typescript
+export default {
+  providers: [{
+    domain: process.env.CLERK_JWT_ISSUER_DOMAIN,
+    applicationID: "convex",
+  }],
+};
+```
+
+## Best Practices
+1. **Always use indexes** for queries that filter data
+2. **Validate all arguments** using Convex validators
+3. **Handle errors gracefully** in mutations
+4. **Use internal functions** for webhook handlers
+5. **Keep functions small** and focused on single responsibility
+6. **Use transactions** when updating multiple documents
+7. **Implement optimistic updates** for better UX

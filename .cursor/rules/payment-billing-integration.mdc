@@ -1,0 +1,404 @@
+---
+description: Clerk Billing integration patterns, subscription management, payment gating, and webhook handling for the SaaS payment system
+---
+# Payment and Billing Integration
+
+## Clerk Billing Overview
+1. Clerk Billing handles all subscription management
+2. Custom pricing component at [components/custom-clerk-pricing.tsx](mdc:components/custom-clerk-pricing.tsx)
+3. Payment-gated content uses `<ClerkBillingGate>` component
+4. Webhook events update payment status in Convex
+
+## Pricing Component Implementation
+
+### Custom Pricing Display
+```typescript
+// components/custom-clerk-pricing.tsx
+"use client";
+
+import { useBilling } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+const PRICING_PLANS = [
+  {
+    name: "Free",
+    price: "$0",
+    features: ["Basic features", "Up to 10 projects"],
+    priceId: null,
+  },
+  {
+    name: "Pro",
+    price: "$19",
+    features: ["All features", "Unlimited projects", "Priority support"],
+    priceId: "price_xxxxx",
+  },
+  {
+    name: "Enterprise",
+    price: "$99",
+    features: ["Everything in Pro", "Custom integrations", "SLA"],
+    priceId: "price_yyyyy",
+  },
+];
+
+export function CustomPricing() {
+  const { openBilling, openSubscriptionModal } = useBilling();
+
+  const handleSubscribe = async (priceId: string) => {
+    await openSubscriptionModal({
+      priceId,
+      successUrl: "/dashboard",
+      cancelUrl: "/pricing",
+    });
+  };
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {PRICING_PLANS.map((plan) => (
+        <Card key={plan.name} className="p-6">
+          <h3 className="text-2xl font-bold">{plan.name}</h3>
+          <p className="text-3xl font-bold mt-4">{plan.price}/mo</p>
+          <ul className="mt-6 space-y-2">
+            {plan.features.map((feature) => (
+              <li key={feature} className="flex items-center">
+                <CheckIcon className="mr-2" />
+                {feature}
+              </li>
+            ))}
+          </ul>
+          <Button
+            className="w-full mt-6"
+            onClick={() => plan.priceId && handleSubscribe(plan.priceId)}
+            disabled={!plan.priceId}
+          >
+            {plan.priceId ? "Subscribe" : "Current Plan"}
+          </Button>
+        </Card>
+      ))}
+    </div>
+  );
+}
+```
+
+## Payment Gating Implementation
+
+### Gate Component Usage
+```typescript
+// app/dashboard/payment-gated/page.tsx
+import { ClerkBillingGate } from "@clerk/nextjs";
+
+export default function PremiumContent() {
+  return (
+    <ClerkBillingGate
+      fallback={<UpgradePrompt />}
+      permissions={["pro", "enterprise"]}
+    >
+      <div>
+        <h1>Premium Content</h1>
+        <p>This content is only available to paid subscribers.</p>
+      </div>
+    </ClerkBillingGate>
+  );
+}
+
+function UpgradePrompt() {
+  return (
+    <div className="text-center py-12">
+      <h2>Upgrade to Pro</h2>
+      <p>This content requires a Pro subscription.</p>
+      <Button asChild className="mt-4">
+        <a href="/pricing">View Plans</a>
+      </Button>
+    </div>
+  );
+}
+```
+
+### Custom Permission Checks
+```typescript
+// utils/subscription.ts
+import { auth } from "@clerk/nextjs/server";
+
+export async function checkSubscription() {
+  const { userId, sessionClaims } = await auth();
+  
+  if (!userId) return false;
+  
+  const subscriptionStatus = sessionClaims?.metadata?.subscriptionStatus;
+  return subscriptionStatus === "active";
+}
+
+export async function getSubscriptionPlan() {
+  const { sessionClaims } = await auth();
+  return sessionClaims?.metadata?.subscriptionPlan || "free";
+}
+
+// Usage in Server Component
+export default async function ProtectedPage() {
+  const hasSubscription = await checkSubscription();
+  
+  if (!hasSubscription) {
+    redirect("/pricing");
+  }
+  
+  return <PremiumContent />;
+}
+```
+
+## Payment Webhook Handling
+
+### Webhook Configuration
+```typescript
+// convex/http.ts - Payment webhook handler
+http.route({
+  path: "/api/payment-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const webhookSecret = process.env.CLERK_WEBHOOK_SECRET!;
+    
+    // Verify webhook
+    const svix_headers = {
+      "svix-id": request.headers.get("svix-id")!,
+      "svix-timestamp": request.headers.get("svix-timestamp")!,
+      "svix-signature": request.headers.get("svix-signature")!,
+    };
+    
+    const wh = new Webhook(webhookSecret);
+    const payload = await request.text();
+    const evt = wh.verify(payload, svix_headers);
+    
+    // Handle payment events
+    switch (evt.type) {
+      case "payment.succeeded":
+        await handlePaymentSuccess(ctx, evt.data);
+        break;
+        
+      case "payment.failed":
+        await handlePaymentFailure(ctx, evt.data);
+        break;
+        
+      case "subscription.created":
+      case "subscription.updated":
+        await handleSubscriptionUpdate(ctx, evt.data);
+        break;
+        
+      case "subscription.deleted":
+        await handleSubscriptionCancellation(ctx, evt.data);
+        break;
+    }
+    
+    return new Response("OK", { status: 200 });
+  }),
+});
+```
+
+### Payment Tracking in Database
+```typescript
+// convex/paymentAttempts.ts
+import { v } from "convex/values";
+import { mutation, query } from "./_generated/server";
+
+export const createPaymentAttempt = mutation({
+  args: {
+    userId: v.string(),
+    amount: v.number(),
+    currency: v.string(),
+    status: v.string(),
+    stripePaymentIntentId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db.insert("paymentAttempts", {
+      ...args,
+      createdAt: Date.now(),
+    });
+  },
+});
+
+export const getPaymentHistory = query({
+  args: { userId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("paymentAttempts")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
+  },
+});
+
+export const updatePaymentStatus = mutation({
+  args: {
+    paymentIntentId: v.string(),
+    status: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const payment = await ctx.db
+      .query("paymentAttempts")
+      .filter((q) => 
+        q.eq(q.field("stripePaymentIntentId"), args.paymentIntentId)
+      )
+      .first();
+    
+    if (payment) {
+      await ctx.db.patch(payment._id, { 
+        status: args.status,
+        updatedAt: Date.now(),
+      });
+    }
+  },
+});
+```
+
+## Subscription Management UI
+
+### User Subscription Dashboard
+```typescript
+// app/dashboard/subscription/page.tsx
+"use client";
+
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useAuth, useBilling } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+export default function SubscriptionDashboard() {
+  const { userId } = useAuth();
+  const { openBilling } = useBilling();
+  
+  const user = useQuery(api.users.getUser, { 
+    externalId: userId! 
+  });
+  
+  const paymentHistory = useQuery(api.paymentAttempts.getPaymentHistory, {
+    userId: userId!,
+  });
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Current Plan</h2>
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="text-2xl font-bold">
+              {user?.subscriptionPlan || "Free"}
+            </p>
+            <p className="text-muted-foreground">
+              Status: {user?.subscriptionStatus || "inactive"}
+            </p>
+          </div>
+          <Button onClick={() => openBilling()}>
+            Manage Subscription
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Payment History</h2>
+        <div className="space-y-2">
+          {paymentHistory?.map((payment) => (
+            <div 
+              key={payment._id} 
+              className="flex justify-between py-2 border-b"
+            >
+              <span>
+                ${payment.amount / 100} {payment.currency.toUpperCase()}
+              </span>
+              <span className={cn(
+                "text-sm",
+                payment.status === "succeeded" 
+                  ? "text-green-600" 
+                  : "text-red-600"
+              )}>
+                {payment.status}
+              </span>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+```
+
+### Usage Limits and Quotas
+```typescript
+// lib/usage-limits.ts
+export const PLAN_LIMITS = {
+  free: {
+    projects: 10,
+    storage: 1024 * 1024 * 100, // 100MB
+    apiCalls: 1000,
+  },
+  pro: {
+    projects: -1, // Unlimited
+    storage: 1024 * 1024 * 1024 * 10, // 10GB
+    apiCalls: 100000,
+  },
+  enterprise: {
+    projects: -1,
+    storage: -1, // Unlimited
+    apiCalls: -1,
+  },
+};
+
+export async function checkUsageLimit(
+  userId: string, 
+  feature: keyof typeof PLAN_LIMITS.free
+) {
+  const user = await getUserWithPlan(userId);
+  const plan = user?.subscriptionPlan || "free";
+  const limit = PLAN_LIMITS[plan][feature];
+  
+  if (limit === -1) return true; // Unlimited
+  
+  const currentUsage = await getCurrentUsage(userId, feature);
+  return currentUsage < limit;
+}
+
+// Enforcement in API
+export async function createProject(userId: string) {
+  const canCreate = await checkUsageLimit(userId, "projects");
+  
+  if (!canCreate) {
+    throw new Error("Project limit reached. Please upgrade your plan.");
+  }
+  
+  // Create project...
+}
+```
+
+## Webhook Event Types
+
+### Supported Clerk Billing Events
+```typescript
+// convex/paymentAttemptTypes.ts
+export const PAYMENT_EVENT_TYPES = {
+  // Payment Events
+  "payment.succeeded": "Payment successful",
+  "payment.failed": "Payment failed",
+  "payment.refunded": "Payment refunded",
+  
+  // Subscription Events
+  "subscription.created": "New subscription",
+  "subscription.updated": "Subscription modified",
+  "subscription.deleted": "Subscription cancelled",
+  "subscription.trial_will_end": "Trial ending soon",
+  
+  // Invoice Events
+  "invoice.paid": "Invoice paid",
+  "invoice.payment_failed": "Invoice payment failed",
+  "invoice.upcoming": "Upcoming invoice",
+} as const;
+```
+
+## Best Practices
+1. **Always verify webhook signatures** for security
+2. **Track all payment attempts** in database
+3. **Implement proper error handling** for failed payments
+4. **Cache subscription status** to reduce API calls
+5. **Use payment gates** for premium features
+6. **Provide clear upgrade prompts** with benefits
+7. **Send payment notifications** to users
+8. **Implement usage tracking** for metered billing
+9. **Handle subscription downgrades** gracefully
+10. **Test with Clerk's test mode** before going live

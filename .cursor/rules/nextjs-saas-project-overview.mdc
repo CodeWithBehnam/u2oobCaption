@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+---
+# Next.js 15 SaaS Project Overview
+
+This is a production-ready Next.js 15 SaaS starter template with integrated authentication, real-time database, and subscription billing.
+
+## Tech Stack
+- **Framework**: Next.js 15 with App Router and Turbopack
+- **Database**: Convex for real-time sync and serverless functions
+- **Authentication**: Clerk for auth and user management
+- **Payments**: Clerk Billing for subscriptions
+- **Styling**: TailwindCSS v4 with shadcn/ui components
+- **Language**: TypeScript throughout
+
+## Core Development Commands
+- `bun run dev` - Start development server (http://localhost:3000)
+- `bunx convex dev` - Start Convex development (run in separate terminal)
+- `bun run build` - Build production bundle
+- `bun start` - Start production server
+- `bun run lint` - Run Next.js linting
+
+## Project Structure
+```
+app/
+├── (landing)/         # Public landing page components
+├── dashboard/         # Protected dashboard area
+│   └── payment-gated/ # Subscription-only content
+├── layout.tsx         # Root layout with providers
+└── middleware.ts      # Auth protection
+
+components/
+├── ui/                # shadcn/ui components
+├── custom-clerk-pricing.tsx
+└── ConvexClientProvider.tsx
+
+convex/
+├── schema.ts          # Database schema
+├── users.ts           # User CRUD operations
+├── paymentAttempts.ts # Payment tracking
+├── http.ts            # Webhook handlers
+└── auth.config.ts     # JWT configuration
+```
+
+## Important Files
+- [app/layout.tsx](mdc:app/layout.tsx) - Root layout with all providers
+- [middleware.ts](mdc:middleware.ts) - Authentication middleware
+- [convex/schema.ts](mdc:convex/schema.ts) - Database schema definitions
+- [components/ConvexClientProvider.tsx](mdc:components/ConvexClientProvider.tsx) - Convex client setup
+
+## Package Manager
+Always use **Bun** instead of npm, pnpm, or yarn for all operations:
+- Install: `bun install` or `bun add`
+- Run scripts: `bun run [script]`
+- Execute binaries: `bunx [command]`
