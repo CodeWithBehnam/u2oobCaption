@@ -1,0 +1,359 @@
+---
+alwaysApply: false
+description: LangChain.js installation and environment configuration from Context7 documentation
+globs: package.json,bun.lock,*.config.*
+---
+
+# LangChain.js Installation and Environment Setup
+
+## Core Package Installation
+
+### Main LangChain Package
+```bash
+npm install langchain @langchain/core
+yarn add langchain @langchain/core
+pnpm add langchain @langchain/core
+```
+
+### Core Abstractions Package
+```bash
+npm install @langchain/core
+yarn add @langchain/core
+pnpm add @langchain/core
+```
+
+### Community Integrations
+```bash
+npm install @langchain/community @langchain/core
+yarn add @langchain/community @langchain/core
+pnpm add @langchain/community @langchain/core
+```
+
+### LangGraph for Agents
+```bash
+npm install @langchain/langgraph @langchain/core
+yarn add @langchain/langgraph @langchain/core
+pnpm add @langchain/langgraph @langchain/core
+```
+
+## Provider-Specific Packages
+
+### OpenAI Integration
+```bash
+npm install @langchain/openai @langchain/core
+yarn add @langchain/openai @langchain/core
+```
+
+### Anthropic Integration
+```bash
+npm install @langchain/anthropic @langchain/core
+yarn add @langchain/anthropic @langchain/core
+```
+
+### Google Generative AI
+```bash
+npm install @langchain/google-genai @langchain/core
+yarn add @langchain/google-genai @langchain/core
+```
+
+### Groq Integration
+```bash
+npm install @langchain/groq @langchain/core
+yarn add @langchain/groq @langchain/core
+```
+
+### Mistral AI
+```bash
+npm install @langchain/mistralai @langchain/core
+yarn add @langchain/mistralai @langchain/core
+```
+
+### Cohere
+```bash
+npm install @langchain/cohere @langchain/core
+yarn add @langchain/cohere @langchain/core
+```
+
+## Vector Store Integrations
+
+### Pinecone
+```bash
+npm install @langchain/pinecone @langchain/core @pinecone-database/pinecone
+```
+
+### Weaviate
+```bash
+npm install @langchain/weaviate @langchain/core
+```
+
+### ChromaDB
+```bash
+npm install @langchain/community chromadb @langchain/core
+```
+
+### Qdrant
+```bash
+npm install @langchain/qdrant @langchain/core
+```
+
+### Faiss (Node.js)
+```bash
+npm install @langchain/community faiss-node @langchain/core
+```
+
+## Document Loaders
+
+### Web Loaders
+```bash
+npm install @langchain/community cheerio @langchain/core
+```
+
+### PDF Processing
+```bash
+npm install @langchain/community pdf-parse @langchain/core
+```
+
+### File System Loaders
+```bash
+npm install @langchain/community @langchain/core
+```
+
+## Environment Configuration
+
+### Node.js Compatibility
+- **Minimum Version**: Node.js 18.x
+- **Recommended**: Node.js 20.x LTS
+- **Supported**: 18.x, 19.x, 20.x, 22.x
+- **Modules**: ESM and CommonJS supported
+
+### TypeScript Configuration
+```json
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
+  }
+}
+```
+
+### Package.json Configuration
+```json
+// For ESM modules
+{
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
+
+// For CommonJS (default)
+{
+  "engines": {
+    "node": ">=18"
+  }
+}
+```
+
+## Environment Variables Setup
+
+### API Keys Configuration
+```bash
+# .env file
+OPENAI_API_KEY=your_openai_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
+GOOGLE_GENAI_API_KEY=your_google_api_key
+GROQ_API_KEY=your_groq_api_key
+MISTRAL_API_KEY=your_mistral_api_key
+COHERE_API_KEY=your_cohere_api_key
+
+# Vector Store Keys
+PINECONE_API_KEY=your_pinecone_api_key
+WEAVIATE_API_KEY=your_weaviate_api_key
+QDRANT_API_KEY=your_qdrant_api_key
+
+# LangSmith (optional)
+LANGCHAIN_TRACING_V2=true
+LANGCHAIN_API_KEY=your_langsmith_api_key
+```
+
+### Loading Environment Variables
+```typescript
+// Option 1: Using dotenv
+import * as dotenv from 'dotenv';
+dotenv.config();
+
+// Option 2: Direct process.env access
+const apiKey = process.env.OPENAI_API_KEY;
+```
+
+## Dependency Version Management
+
+### Consistent Core Versions
+```json
+// package.json with resolutions (Yarn)
+{
+  "dependencies": {
+    "@langchain/core": "^0.3.0",
+    "langchain": "^0.3.0"
+  },
+  "resolutions": {
+    "@langchain/core": "0.3.0"
+  }
+}
+
+// package.json with overrides (npm)
+{
+  "dependencies": {
+    "@langchain/core": "^0.3.0",
+    "langchain": "^0.3.0"
+  },
+  "overrides": {
+    "@langchain/core": "0.3.0"
+  }
+}
+
+// pnpm-workspace.yaml (pnpm)
+{
+  "overrides": {
+    "@langchain/core": "0.3.0"
+  }
+}
+```
+
+## Platform-Specific Setup
+
+### Cloudflare Workers
+```bash
+npm install @langchain/cloudflare @langchain/core
+```
+
+### Vercel/Next.js
+- Works out of the box with Node.js runtime
+- Supports both server and client components
+- Use `next.config.js` for custom webpack configuration
+
+### Supabase Edge Functions
+```bash
+npm install @langchain/supabase @langchain/core
+```
+
+### Browser Environment
+```html
+<!-- Via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/langchain@0.3.0/dist/index.js"></script>
+
+<!-- Via npm for bundlers -->
+import { ChatOpenAI } from "@langchain/openai";
+```
+
+## Development Tools Setup
+
+### Essential Dev Dependencies
+```bash
+# TypeScript and types
+npm install -D typescript @types/node
+
+# Testing framework
+npm install -D jest @types/jest ts-jest
+
+# Linting and formatting
+npm install -D eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+npm install -D prettier
+
+# Build tools
+npm install -D vite rollup @rollup/plugin-node-resolve @rollup/plugin-commonjs
+```
+
+### LangSmith Integration
+```bash
+npm install langsmith
+```
+
+### Development Scripts
+```json
+// package.json scripts
+{
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write src/**/*.ts"
+  }
+}
+```
+
+## Troubleshooting Common Issues
+
+### Module Resolution Issues
+```typescript
+// For ESM/CommonJS compatibility issues
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const langchain = require('langchain');
+```
+
+### Polyfill Requirements
+```typescript
+// For Node.js 16 ReadableStream support
+import "web-streams-polyfill/polyfill";
+
+// Add to package.json
+{
+  "dependencies": {
+    "web-streams-polyfill": "^4.0.0"
+  }
+}
+```
+
+### Build Tool Configuration
+
+#### Vite Configuration
+```typescript
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
+export default defineConfig({
+  plugins: [nodeResolve()],
+  optimizeDeps: {
+    include: ['@langchain/core', '@langchain/openai']
+  }
+});
+```
+
+#### Webpack Configuration
+```javascript
+// webpack.config.js
+module.exports = {
+  resolve: {
+    extensions: ['.ts', '.js'],
+    alias: {
+      '@langchain/core': require.resolve('@langchain/core')
+    }
+  }
+};
+```
+
+### Version Compatibility Matrix
+- **@langchain/core**: Always use the same version across all LangChain packages
+- **Node.js 18+**: Required for most recent features
+- **TypeScript 4.9+**: Recommended for full type support
+- **Peer Dependencies**: Check each package for specific requirements
+
+### Performance Optimizations
+1. **Use specific imports**: Import only what you need
+2. **Enable tree shaking**: Configure bundler for dead code elimination
+3. **Use streaming**: For better perceived performance
+4. **Implement caching**: Cache expensive operations
+5. **Bundle analysis**: Monitor bundle size with tools like `webpack-bundle-analyzer`
+
+This installation guide ensures proper setup of LangChain.js with all necessary dependencies and configurations for various environments and use cases.

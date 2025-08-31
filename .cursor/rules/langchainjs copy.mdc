@@ -1,0 +1,31 @@
+---
+alwaysApply: false
+description: Guidance for working with LangChain.js code; always fetch latest docs via Context7 before changing streaming, prompts, or model integrations.
+---
+# LangChain.js Integration Rule
+
+Use this rule whenever you touch files that import or reference `@langchain/*`, `ChatOpenAI`, `ChatPromptTemplate`, or LangChain streaming in this repo (e.g., [src/utils/translate.js](mdc:src/utils/translate.js), [src/background/index.js](mdc:src/background/index.js)).
+
+## Mandatory doc check
+- Always consult the latest LangChain.js docs via Context7 before modifying LangChain code.
+  - Portal: `https://context7.com/langchain-ai/langchainjs`
+  - Steps (use the Context7 MCP tools):
+    1. Resolve library id: `mcp_context7_resolve-library-id` with `LangChainJS`
+    2. Fetch focused docs: `mcp_context7_get-library-docs` with the resolved id
+       - Common topics to query: `streaming`, `chat models`, `prompts`, `tool calling`, `multimodal`, `vision`, `callbacks`
+
+## Local integration checklist
+- Prefer LangChain streaming via `.stream()` over manual polling when supported
+- Keep messages structured (system + user); avoid lossy conversions
+- If a model restricts `temperature`, detect error and retry without it
+- Preserve math/markup verbatim; translate only prose
+- For vision: send `HumanMessage` with `content: [{ type: 'text', ... }, { type: 'image_url', image_url: ... }]`
+
+## Project touchpoints
+- Text translation and streaming: [src/utils/translate.js](mdc:src/utils/translate.js)
+- Background routing: [src/background/index.js](mdc:src/background/index.js)
+
+## Notes
+- When changing streaming behavior, confirm against LangChain’s streaming guidance (`stream()` and events) and update code accordingly.
+- Keep prompts concise and explicit; avoid adding formatting the UI must strip.
+

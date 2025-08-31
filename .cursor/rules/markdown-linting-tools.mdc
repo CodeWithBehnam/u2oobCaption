@@ -1,0 +1,379 @@
+---
+globs: *.md
+description: Markdown linting, validation, and quality assurance tools
+---
+# Markdown Linting and Validation Tools
+
+## Linting Rules and Standards
+
+### Core Linting Rules
+
+#### Headings (MD001-MD006)
+- **MD001**: Header levels should only increment by one level at a time
+- **MD002**: First header should be a top-level header (but we don't use H1 in content)
+- **MD003**: Header style should be consistent (use ATX style: # ## ###)
+- **MD004**: Unordered list style should be consistent (use dashes: -)
+- **MD005**: Inconsistent indentation for list items
+- **MD006**: Consider starting bulleted lists at the beginning of the line
+
+#### Spacing and Whitespace (MD007-MD014)
+- **MD007**: Unordered list indentation should be 2 spaces
+- **MD009**: Trailing spaces should be removed
+- **MD010**: Hard tabs should be converted to spaces
+- **MD012**: Multiple consecutive blank lines should be collapsed
+- **MD013**: Line length should not exceed 400 characters
+- **MD014**: Dollar signs used before commands without showing output
+
+#### Code Blocks (MD040-MD046)
+- **MD040**: Fenced code blocks should have a language specified
+- **MD041**: First line in file should be a top-level header (override for front matter)
+- **MD042**: No empty links (all links must have text)
+- **MD043**: Required heading structure (if using specific structure)
+- **MD044**: Proper names should have consistent capitalization
+- **MD045**: Images should have alt text
+- **MD046**: Code block style should be consistent (use fenced)
+
+#### Links and References (MD050-MD060)
+- **MD050**: Link fragments should be valid
+- **MD051**: Link fragments should be unique
+- **MD052**: Reference links and images should use a label that is defined
+- **MD053**: Link and image reference definitions should be needed
+- **MD054**: Link and image reference definitions should be unique
+
+## Validation Tools Setup
+
+### ESLint Configuration for Markdown
+```javascript
+// .eslintrc.js or eslint.config.js
+module.exports = {
+  extends: [
+    'plugin:markdown/recommended'
+  ],
+  overrides: [
+    {
+      files: ['*.md'],
+      parser: 'markdown-eslint-parser',
+      rules: {
+        'markdown/heading-increment': 'error',
+        'markdown/no-duplicate-headings': 'error',
+        'markdown/no-empty-links': 'error',
+        'markdown/no-missing-alt-text': 'error',
+        'markdown/single-trailing-newline': 'error',
+        'markdown/no-trailing-spaces': 'error',
+        'markdown/max-line-length': ['error', 400]
+      }
+    }
+  ]
+};
+```
+
+### Prettier Configuration for Markdown
+```javascript
+// .prettierrc
+{
+  "proseWrap": "always",
+  "printWidth": 400,
+  "tabWidth": 2,
+  "useTabs": false,
+  "endOfLine": "lf",
+  "embeddedLanguageFormatting": "auto"
+}
+```
+
+### VS Code Extensions
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "DavidAnson.vscode-markdownlint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
+```
+
+### VS Code Settings
+```json
+// .vscode/settings.json
+{
+  "markdownlint.config": {
+    "MD001": true,
+    "MD002": false,  // Disable H1 requirement due to front matter
+    "MD003": { "style": "atx" },
+    "MD004": { "style": "dash" },
+    "MD007": { "indent": 2 },
+    "MD009": true,
+    "MD010": true,
+    "MD012": true,
+    "MD013": { "line_length": 400 },
+    "MD024": false,  // Allow duplicate headings in different sections
+    "MD025": false,  // Allow multiple top-level headings
+    "MD026": false,  // Allow trailing punctuation in headings
+    "MD029": false,  // Allow ordered list prefixes
+    "MD030": { "ul_single": 1, "ol_single": 1, "ul_multi": 1, "ol_multi": 1 },
+    "MD033": { "allowed_elements": ["details", "summary", "kbd", "br", "hr"] },
+    "MD035": { "style": "---" },
+    "MD036": false,  // Allow single-paragraph emphasis
+    "MD040": true,
+    "MD041": false,  // Allow front matter without H1
+    "MD045": true,
+    "MD046": { "style": "fenced" },
+    "MD050": true
+  },
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  }
+}
+```
+
+## Custom Validation Scripts
+
+### Front Matter Validator
+```bash
+#!/bin/bash
+# validate-front-matter.sh
+
+echo "Validating front matter in markdown files..."
+
+for file in "$@"; do
+  if [[ "$file" == *.md ]]; then
+    echo "Checking $file..."
+
+    # Check if file starts with front matter
+    if ! head -n 1 "$file" | grep -q "^---$"; then
+      echo "ERROR: $file - Missing front matter opening"
+      continue
+    fi
+
+    # Find front matter closing
+    front_matter_end=$(grep -n "^---$" "$file" | sed -n '2p' | cut -d: -f1)
+
+    if [[ -z "$front_matter_end" ]]; then
+      echo "ERROR: $file - Missing front matter closing"
+      continue
+    fi
+
+    # Extract front matter
+    front_matter=$(sed -n "2,${front_matter_end}p" "$file")
+
+    # Validate required fields
+    required_fields=("title" "description" "author" "date")
+    for field in "${required_fields[@]}"; do
+      if ! echo "$front_matter" | grep -q "^$field:"; then
+        echo "ERROR: $file - Missing required field: $field"
+      fi
+    done
+
+    # Validate field formats
+    if echo "$front_matter" | grep -q "^date:"; then
+      date_value=$(echo "$front_matter" | grep "^date:" | head -1 | sed 's/^date: *//' | tr -d '"' | tr -d "'")
+      if ! [[ $date_value =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        echo "ERROR: $file - Invalid date format: $date_value (should be YYYY-MM-DD)"
+      fi
+    fi
+  fi
+done
+```
+
+### Line Length Validator
+```bash
+#!/bin/bash
+# validate-line-length.sh
+
+echo "Validating line lengths..."
+
+while IFS= read -r line; do
+  # Skip lines that are part of code blocks
+  if [[ $line =~ ^[[:space:]]*``` ]]; then
+    in_code_block=$((1 - in_code_block))
+    continue
+  fi
+
+  if [[ $in_code_block -eq 0 ]]; then
+    line_length=${#line}
+    if [[ $line_length -gt 400 ]]; then
+      echo "Line too long ($line_length chars): ${line:0:100}..."
+    fi
+  fi
+done < "$1"
+```
+
+### Link Validator
+```bash
+#!/bin/bash
+# validate-links.sh
+
+echo "Validating links in markdown files..."
+
+for file in "$@"; do
+  if [[ "$file" == *.md ]]; then
+    echo "Checking links in $file..."
+
+    # Extract all links
+    grep -o '\[.*\]([^)]*)' "$file" | while read -r link; do
+      # Extract URL
+      url=$(echo "$link" | sed 's/.*(\([^)]*\)).*/\1/')
+
+      # Skip internal workspace links
+      if [[ "$url" == mdc:* ]]; then
+        continue
+      fi
+
+      # Skip anchor links
+      if [[ "$url" == \#* ]]; then
+        continue
+      fi
+
+      # Check if URL is accessible (basic check)
+      if ! curl -s --head --fail "$url" > /dev/null 2>&1; then
+        echo "WARNING: $file - Potentially broken link: $url"
+      fi
+    done
+  fi
+done
+```
+
+## Automated Validation Pipeline
+
+### GitHub Actions Workflow
+```yaml
+# .github/workflows/markdown-validation.yml
+name: Markdown Validation
+
+on:
+  push:
+    paths: ['*.md', 'Docs/*.md']
+  pull_request:
+    paths: ['*.md', 'Docs/*.md']
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install -g markdownlint-cli prettier
+
+      - name: Run markdownlint
+        run: markdownlint '**/*.md'
+
+      - name: Check formatting with Prettier
+        run: prettier --check '**/*.md'
+
+      - name: Validate front matter
+        run: ./scripts/validate-front-matter.sh **/*.md
+
+      - name: Validate line lengths
+        run: |
+          for file in **/*.md; do
+            ./scripts/validate-line-length.sh "$file"
+          done
+```
+
+### Pre-commit Hooks
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+echo "Running markdown validation..."
+
+# Run markdownlint
+if command -v markdownlint >/dev/null 2>&1; then
+  markdownlint **/*.md
+  if [ $? -ne 0 ]; then
+    echo "Markdown linting failed. Please fix the issues before committing."
+    exit 1
+  fi
+else
+  echo "markdownlint not found. Please install it: npm install -g markdownlint-cli"
+fi
+
+# Check front matter
+./scripts/validate-front-matter.sh **/*.md
+if [ $? -ne 0 ]; then
+  echo "Front matter validation failed. Please fix the issues before committing."
+  exit 1
+fi
+
+echo "All validations passed!"
+```
+
+### VS Code Tasks
+```json
+// .vscode/tasks.json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Validate Markdown",
+      "type": "shell",
+      "command": "./scripts/validate-all.sh",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Markdown",
+      "type": "shell",
+      "command": "prettier --write '**/*.md'",
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
+  ]
+}
+```
+
+## Integration with Documentation Workflow
+
+### Documentation Checklist
+- [ ] Front matter validation passed
+- [ ] Markdown linting passed
+- [ ] Line length under 400 characters
+- [ ] Links are accessible and descriptive
+- [ ] Images have alt text
+- [ ] Code blocks have language tags
+- [ ] Headings follow proper hierarchy
+- [ ] Lists use consistent formatting
+- [ ] Tables are properly formatted
+- [ ] Content is spell-checked
+
+### Quality Gates
+1. **Authoring**: Use templates and follow style guide
+2. **Review**: Peer review for content and formatting
+3. **Validation**: Automated checks for syntax and structure
+4. **Publishing**: Final review and formatting check
+5. **Maintenance**: Regular updates and link verification
+
+### Continuous Improvement
+- **Metrics**: Track validation failures and common issues
+- **Updates**: Regularly update linting rules based on feedback
+- **Training**: Educate team members on markdown best practices
+- **Tools**: Keep validation tools updated with latest standards
+
+This comprehensive linting and validation system ensures high-quality, consistent, and maintainable markdown documentation across the project.

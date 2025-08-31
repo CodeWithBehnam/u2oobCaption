@@ -1,0 +1,189 @@
+---
+alwaysApply: false
+description: LangChain.js development workflow and best practices
+globs: *.ts,*.tsx,*.js,*.jsx
+---
+
+# LangChain.js Development Workflow
+
+## Three-Phase Development Process
+
+### 1. Development Phase
+**Focus**: Build and iterate on your application
+
+#### Key Activities:
+- **Prototype with components**: Use pre-built chains and agents
+- **Iterate on prompts**: Test and refine prompt templates
+- **Add integrations**: Connect to external data sources
+- **Local testing**: Test functionality with sample data
+
+#### Development Patterns:
+```typescript
+// Start with simple chains
+import { LLMChain } from "langchain/chains";
+import { ChatOpenAI } from "@langchain/openai";
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const chain = new LLMChain({
+  llm: new ChatOpenAI({ temperature: 0 }),
+  prompt: PromptTemplate.fromTemplate("Answer: {question}")
+});
+
+// Test locally
+const result = await chain.call({ question: "What is LangChain?" });
+console.log(result);
+```
+
+### 2. Productionization Phase
+**Focus**: Prepare for production deployment
+
+#### Key Activities:
+- **Monitoring setup**: Implement LangSmith for observability
+- **Error handling**: Add comprehensive error boundaries
+- **Performance optimization**: Optimize chain performance
+- **Testing**: Write unit and integration tests
+- **Documentation**: Document your application
+
+#### Production Patterns:
+```typescript
+// Add error handling and monitoring
+import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
+
+const chain = new LLMChain({
+  llm: new ChatOpenAI({ temperature: 0 }),
+  prompt: PromptTemplate.fromTemplate("Answer: {question}"),
+  callbacks: [new LangChainTracer()]
+});
+
+// Add error handling
+try {
+  const result = await chain.call({ question: "What is LangChain?" });
+  console.log(result);
+} catch (error) {
+  console.error("Chain execution failed:", error);
+  // Implement fallback or retry logic
+}
+```
+
+### 3. Deployment Phase
+**Focus**: Deploy to production environment
+
+#### Key Activities:
+- **Environment configuration**: Set up production environment variables
+- **Scaling considerations**: Optimize for production load
+- **Security**: Implement security best practices
+- **Monitoring**: Set up production monitoring and alerting
+
+#### Deployment Options:
+```typescript
+// Vercel/Next.js deployment
+export default function handler(req, res) {
+  // Your LangChain application logic
+}
+
+// Cloudflare Workers deployment
+export default {
+  async fetch(request, env) {
+    // Your LangChain application logic
+  }
+}
+```
+
+## Best Practices by Phase
+
+### Development Phase Best Practices
+1. **Start simple**: Begin with basic chains before complex agents
+2. **Use LCEL**: Leverage LangChain Expression Language for composability
+3. **Test early**: Validate each component individually
+4. **Version control**: Use Git for all code changes
+5. **Documentation**: Document your thought process and decisions
+
+### Productionization Phase Best Practices
+1. **Add monitoring**: Use LangSmith for chain observability
+2. **Implement error handling**: Graceful degradation and retry logic
+3. **Performance testing**: Load test your chains
+4. **Security review**: Audit API keys and data handling
+5. **Write tests**: Unit tests for components, integration tests for chains
+
+### Deployment Phase Best Practices
+1. **Environment variables**: Never hardcode secrets
+2. **Health checks**: Implement application health monitoring
+3. **Logging**: Structured logging for production debugging
+4. **Scaling**: Consider rate limits and resource usage
+5. **Rollback plan**: Prepare for quick rollbacks if needed
+
+## Common Patterns
+
+### Chain Composition
+```typescript
+// Compose simple chains into complex workflows
+const simpleChain = new LLMChain({ /* config */ });
+const complexChain = new SequentialChain({
+  chains: [simpleChain, anotherChain],
+  inputVariables: ["input"],
+  outputVariables: ["output"]
+});
+```
+
+### Agent Implementation
+```typescript
+// Use LangGraph.js for complex agents
+import { StateGraph, START } from "@langchain/langgraph";
+
+const graph = new StateGraph(StateAnnotation)
+  .addNode("agent", agentNode)
+  .addNode("tools", toolNode)
+  .addEdge(START, "agent")
+  .addConditionalEdges("agent", shouldContinue)
+  .addEdge("tools", "agent");
+
+const app = graph.compile();
+```
+
+### Error Handling Patterns
+```typescript
+// Implement comprehensive error handling
+const chainWithErrorHandling = new LLMChain({
+  llm: new ChatOpenAI({ temperature: 0 }),
+  prompt: PromptTemplate.fromTemplate("Answer: {question}"),
+  callbacks: [
+    {
+      handleChainError: (error, runId) => {
+        console.error(`Chain ${runId} failed:`, error);
+        // Custom error handling logic
+      }
+    }
+  ]
+});
+```
+
+## Testing Strategy
+
+### Unit Testing
+```typescript
+// Test individual components
+import { ChatOpenAI } from "@langchain/openai";
+
+describe("ChatOpenAI", () => {
+  it("should respond to basic questions", async () => {
+    const llm = new ChatOpenAI();
+    const response = await llm.invoke("Hello");
+    expect(response.content).toBeDefined();
+  });
+});
+```
+
+### Integration Testing
+```typescript
+// Test complete chains
+describe("QuestionAnsweringChain", () => {
+  it("should answer questions based on context", async () => {
+    const chain = new RetrievalQAChain({ /* config */ });
+    const result = await chain.call({
+      query: "What is LangChain?",
+      context: "LangChain is a framework for LLM applications"
+    });
+    expect(result.answer).toContain("framework");
+  });
+});
+```

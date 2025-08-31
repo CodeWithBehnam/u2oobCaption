@@ -1,0 +1,68 @@
+---
+alwaysApply: false
+description: LangChain.js ecosystem structure and package organization
+globs: *.ts,*.tsx,*.js,*.jsx
+---
+
+# LangChain.js Ecosystem Structure
+
+## Core Packages
+
+### @langchain/core
+- **Purpose**: Base abstractions and LangChain Expression Language (LCEL)
+- **When to use**: Foundational types, interfaces, and core functionality
+- **Installation**: Usually comes as dependency of other LangChain packages
+
+### @langchain/community
+- **Purpose**: Third-party integrations and community-contributed components
+- **When to use**: When you need integrations with external services (APIs, databases, etc.)
+- **Examples**: OpenAI, Anthropic, Pinecone, Weaviate, etc.
+
+### langchain
+- **Purpose**: Main package with chains, agents, and retrieval strategies
+- **When to use**: Building complete applications with pre-built components
+- **Contains**: Cognitive architecture components for applications
+
+### LangGraph.js
+- **Purpose**: Build stateful agents with streaming and human-in-the-loop support
+- **When to use**: Complex multi-step workflows requiring decision-making
+- **Features**: Graph-based workflow modeling, robust agent architectures
+
+## Package Selection Guide
+
+### For Simple Applications
+```typescript
+// Use main langchain package
+import { ChatOpenAI, PromptTemplate } from "langchain";
+```
+
+### For Complex Agent Systems
+```typescript
+// Use LangGraph.js
+import { StateGraph } from "@langchain/langgraph";
+```
+
+### For Custom Integrations
+```typescript
+// Use @langchain/core for base abstractions
+import { BaseLLM } from "@langchain/core/language_models/base";
+```
+
+### For Third-Party Services
+```typescript
+// Use @langchain/community
+import { OpenAIEmbeddings } from "@langchain/community/embeddings/openai";
+```
+
+## Best Practices
+
+1. **Start with main package** for simple use cases
+2. **Add LangGraph.js** when you need complex agent workflows
+3. **Use @langchain/community** for specific integrations
+4. **Reference @langchain/core** for custom implementations
+5. **Check compatibility** between package versions
+
+## Related Tools
+
+- **LangSmith**: For monitoring, testing, and evaluating chains
+- **LangGraph Cloud**: For production deployment of LangGraph applications

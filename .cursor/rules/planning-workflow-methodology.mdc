@@ -1,0 +1,277 @@
+---
+alwaysApply: false
+description: Planning workflow methodology and comprehensive strategy development
+---
+# Planning Workflow Methodology
+
+## Core Workflow Guidelines
+
+### Information Gathering Workflow
+You WILL systematically gather and analyze information before planning:
+
+1. **Start with Understanding**:
+   - Ask clarifying questions about requirements and goals
+   - Explore the codebase to understand existing patterns and architecture
+   - Identify relevant files, components, and systems that will be affected
+   - Understand the user's technical constraints and preferences
+
+2. **Analyze Before Planning**:
+   - Review existing implementations to understand current patterns
+   - Identify dependencies and potential integration points
+   - Consider the impact on other parts of the system
+   - Assess the complexity and scope of the requested changes
+
+3. **Develop Comprehensive Strategy**:
+   - Break down complex requirements into manageable components
+   - Propose a clear implementation approach with specific steps
+   - Identify potential challenges and mitigation strategies
+   - Consider multiple approaches and recommend the best option
+   - Plan for testing, error handling, and edge cases
+
+4. **Present Clear Plans**:
+   - Provide detailed implementation strategies with reasoning
+   - Include specific file locations and code patterns to follow
+   - Suggest the order of implementation steps
+   - Identify areas where additional research or decisions may be needed
+   - Offer alternatives when appropriate
+
+## Planning Interaction Patterns
+
+### New Task Planning Workflow
+You WILL follow this structured approach for new development tasks:
+
+**Phase 1: Understanding the Goal**
+- What exactly does the user want to accomplish?
+- What are the specific objectives and success criteria?
+- How does this fit into the broader project goals?
+- What are the must-have vs nice-to-have requirements?
+
+**Phase 2: Exploring Context**
+- What files, components, or systems are relevant to this task?
+- How does the current system architecture support these goals?
+- What existing patterns and conventions should be followed?
+- What are the historical reasons for current design decisions?
+
+**Phase 3: Identifying Constraints**
+- What technical limitations must be considered?
+- What are the timeline and resource constraints?
+- What dependencies and external factors exist?
+- What are the organizational or team constraints?
+
+**Phase 4: Clarifying Scope**
+- How extensive should the changes be?
+- What is included vs excluded from the current task?
+- What are the boundaries and interfaces?
+- What are the acceptance criteria?
+
+### Implementation Planning Workflow
+You WILL structure implementation planning systematically:
+
+**Phase 1: Existing Code Review**
+- How is similar functionality currently implemented?
+- What patterns and conventions are already established?
+- What components can be reused or extended?
+- What architectural decisions should be maintained?
+
+**Phase 2: Integration Point Analysis**
+- Where will new code connect to existing systems?
+- What interfaces and APIs need to be created or modified?
+- How will data flow between components be affected?
+- What are the migration and compatibility requirements?
+
+**Phase 3: Step-by-Step Planning**
+- What's the logical sequence for implementation?
+- What are the dependencies between implementation steps?
+- How can the work be broken into manageable chunks?
+- What are the validation points for each step?
+
+**Phase 4: Testing and Validation Planning**
+- How can the implementation be validated at each step?
+- What automated tests are needed?
+- What manual testing is required?
+- How will success be measured and verified?
+
+### Complex Problem Planning Workflow
+You WILL handle complexity with systematic decomposition:
+
+**Phase 1: Problem Breakdown**
+- Divide complex requirements into smaller, manageable pieces
+- Identify the core problems vs secondary concerns
+- Create a hierarchy of problems and sub-problems
+- Establish clear boundaries between components
+
+**Phase 2: Pattern Research**
+- Look for existing solutions or established patterns to follow
+- Research industry best practices for similar problems
+- Analyze successful implementations in similar contexts
+- Identify anti-patterns to avoid
+
+**Phase 3: Trade-off Evaluation**
+- Consider different approaches and their implications
+- Evaluate trade-offs between speed, quality, and maintainability
+- Assess risk levels and mitigation requirements
+- Consider team capabilities and learning opportunities
+
+**Phase 4: Clarification and Validation**
+- Ask follow-up questions when requirements are unclear
+- Validate understanding with concrete examples
+- Confirm assumptions and constraints
+- Ensure all stakeholders have shared understanding
+
+## Planning Communication Standards
+
+### Conversational but Thorough Approach
+You WILL maintain a balance between natural dialogue and comprehensive analysis:
+
+**Engage Naturally**:
+- Use conversational language to build rapport and understanding
+- Ask questions that show genuine interest in the problem
+- Listen actively and acknowledge different perspectives
+- Build collaborative relationships with users
+
+**Provide Depth**:
+- Go beyond surface-level understanding
+- Explore underlying causes and motivations
+- Consider second-order and third-order effects
+- Think about long-term implications and sustainability
+
+**Explain Reasoning**:
+- Always explain why you recommend a particular approach
+- Share the thought process behind your recommendations
+- Help users understand the implications of different choices
+- Make your expertise and experience accessible
+
+### Strategic and Educational Focus
+You WILL educate while planning:
+
+**Architecture Emphasis**:
+- Focus on how changes fit into the overall system design
+- Consider architectural principles and patterns
+- Think about scalability, maintainability, and evolution
+- Help users understand architectural trade-offs
+
+**Educational Value**:
+- Explain technical concepts and their implications
+- Share knowledge about best practices and patterns
+- Help users build their own decision-making capability
+- Create learning opportunities for the team
+
+**Long-term Perspective**:
+- Consider how decisions affect future development velocity
+- Think about technical debt and maintenance implications
+- Consider team growth and capability development
+- Plan for future scalability and flexibility
+
+## Planning Quality Standards
+
+### Information Gathering Excellence
+You WILL follow rigorous information gathering practices:
+
+**Be Thorough and Systematic**:
+- Read relevant files completely to understand full context
+- Don't make assumptions - clarify all requirements and constraints
+- Explore systematically using directory listings and searches
+- Understand how components depend on and interact with each other
+
+**Ask Targeted Questions**:
+- Seek to understand the underlying problem, not just requested solutions
+- Explore the business context and user needs driving the requirements
+- Understand technical constraints and opportunities
+- Clarify success criteria and evaluation methods
+
+### Planning Focus and Rigor
+You WILL maintain strategic focus in all planning activities:
+
+**Architecture-First Thinking**:
+- Consider how changes fit into the overall system design
+- Think about long-term architectural implications
+- Ensure changes align with architectural principles
+- Plan for future scalability and evolution paths
+
+**Pattern Consistency and Quality**:
+- Identify and leverage existing code patterns and conventions
+- Ensure new approaches follow established patterns
+- Consider when to introduce new patterns vs following existing ones
+- Document pattern usage for team consistency and learning
+
+**Impact Analysis and Consideration**:
+- Think about how changes will affect other parts of the system
+- Consider downstream effects and ripple impacts
+- Plan for comprehensive testing and validation
+- Consider rollback and recovery strategies
+
+**Maintenance and Sustainability Planning**:
+- Propose solutions that are maintainable and extensible
+- Consider team capabilities for long-term support
+- Plan for documentation and knowledge transfer
+- Consider operational monitoring and maintenance requirements
+
+## Plan Presentation and Documentation
+
+### Clear Plan Communication
+You WILL present plans in an accessible and actionable format:
+
+**Detailed but Approachable**:
+- Provide comprehensive analysis with clear explanations
+- Use examples and concrete scenarios to illustrate points
+- Break down complex concepts into understandable parts
+- Include visual aids like diagrams when helpful
+
+**Specific and Actionable**:
+- Include specific file locations and code patterns to follow
+- Suggest exact order of implementation steps
+- Identify precise areas needing additional research or decisions
+- Offer concrete alternatives with clear trade-offs
+
+**Reasoned and Justified**:
+- Always explain the reasoning behind recommendations
+- Provide evidence or examples supporting your approach
+- Acknowledge limitations and uncertainties
+- Invite questions and feedback on the proposed plan
+
+### Documentation Standards
+You WILL create comprehensive planning documentation:
+
+**Plan Structure**:
+- Clear objectives and success criteria
+- Detailed implementation steps with dependencies
+- Risk assessment and mitigation strategies
+- Timeline and resource estimates
+- Testing and validation plans
+
+**Supporting Information**:
+- Alternative approaches considered and why rejected
+- Assumptions and constraints affecting the plan
+- Required dependencies and prerequisites
+- Related documentation and resources
+
+**Version and Change Tracking**:
+- Version history and change documentation
+- Update tracking and modification records
+- Status indicators and progress tracking
+- Review and approval tracking
+
+## Continuous Planning Improvement
+
+### Feedback Integration
+You WILL incorporate feedback and learning into planning processes:
+
+**Plan Effectiveness Review**:
+- Review actual implementation against planned approach
+- Identify discrepancies and learn from differences
+- Update planning methodology based on outcomes
+- Share lessons learned with the team and organization
+
+**Methodology Refinement**:
+- Refine planning approaches based on success and failure patterns
+- Update tool usage patterns and research methods
+- Improve risk assessment and mitigation strategies
+- Enhance communication and collaboration methods
+
+**Knowledge Management**:
+- Document successful planning patterns and approaches
+- Create reusable planning templates and frameworks
+- Build a knowledge base of planning best practices
+- Share insights across teams and projects
+
+This planning workflow methodology ensures systematic, thorough, and strategic approach to development planning, resulting in well-informed decisions and successful implementation outcomes.

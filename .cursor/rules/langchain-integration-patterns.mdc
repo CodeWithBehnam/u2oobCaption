@@ -1,0 +1,691 @@
+---
+alwaysApply: false
+description: LangChain.js integration patterns and implementation best practices from Context7 documentation
+globs: *.ts,*.tsx,*.js,*.jsx
+---
+
+# LangChain.js Integration Patterns
+
+## Core Integration Concepts
+
+### LangChain Expression Language (LCEL)
+
+#### Declarative Chain Composition
+```typescript
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { StringOutputParser } from "@langchain/core/output_parsers";
+
+// Create components
+const prompt = ChatPromptTemplate.fromTemplate(
+  "Tell me a short joke about {topic}"
+);
+const model = new ChatOpenAI({
+  model: "gpt-3.5-turbo",
+  temperature: 0.7
+});
+const outputParser = new StringOutputParser();
+
+// Chain using LCEL pipe operator
+const chain = prompt | model | outputParser;
+
+// Execute
+const joke = await chain.invoke({ topic: "cats" });
+console.log(joke);
+```
+
+#### Runnable Interface Methods
+```typescript
+// Synchronous execution
+const result = chain.invoke({ input: "Hello" });
+
+// Asynchronous execution
+const asyncResult = await chain.invoke({ input: "Hello" });
+
+// Streaming execution
+const stream = await chain.stream({ input: "Tell me a story" });
+for await (const chunk of stream) {
+  console.log(chunk);
+}
+
+// Batch processing
+const batchResults = await chain.batch([
+  { input: "First query" },
+  { input: "Second query" }
+]);
+```
+
+### Advanced LCEL Patterns
+
+#### Parallel Processing
+```typescript
+import { RunnableParallel } from "@langchain/core/runnables";
+
+// Run multiple chains in parallel
+const parallelChain = RunnableParallel({
+  joke: jokeChain,
+  fact: factChain,
+  quote: quoteChain
+});
+
+const results = await parallelChain.invoke({ topic: "cats" });
+// Results: { joke: "...", fact: "...", quote: "..." }
+```
+
+#### Conditional Routing
+```typescript
+import { RunnableBranch } from "@langchain/core/runnables";
+
+const chain = RunnableBranch(
+  // Route based on input
+  (input) => input.length > 100,
+  longChain,    // For long inputs
+  shortChain    // For short inputs
+);
+
+const result = await chain.invoke(userInput);
+```
+
+## LLM Provider Integrations
+
+### OpenAI Integration
+```typescript
+import { ChatOpenAI } from "@langchain/openai";
+
+const llm = new ChatOpenAI({
+  model: "gpt-4",
+  temperature: 0,
+  openAIApiKey: process.env.OPENAI_API_KEY,
+  maxTokens: 1000
+});
+
+// Basic usage
+const response = await llm.invoke("Hello, how are you?");
+
+// With streaming
+const stream = await llm.stream("Tell me a story");
+for await (const chunk of stream) {
+  process.stdout.write(chunk.content);
+}
+```
+
+### Anthropic Integration
+```typescript
+import { ChatAnthropic } from "@langchain/anthropic";
+
+const claude = new ChatAnthropic({
+  model: "claude-3-sonnet-20240229",
+  temperature: 0.7,
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+  maxTokens: 1000
+});
+
+const response = await claude.invoke("Explain quantum physics simply");
+```
+
+### Google Generative AI
+```typescript
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+
+const gemini = new ChatGoogleGenerativeAI({
+  model: "gemini-pro",
+  temperature: 0.5,
+  apiKey: process.env.GOOGLE_API_KEY
+});
+
+const response = await gemini.invoke("Write a haiku about AI");
+```
+
+### Groq Integration
+```typescript
+import { ChatGroq } from "@langchain/groq";
+
+const groq = new ChatGroq({
+  model: "llama2-70b-4096",
+  temperature: 0.6,
+  apiKey: process.env.GROQ_API_KEY
+});
+
+const response = await groq.invoke("Explain machine learning");
+```
+
+## Vector Store Integrations
+
+### Pinecone Integration
+```typescript
+import { PineconeStore } from "@langchain/pinecone";
+import { OpenAIEmbeddings } from "@langchain/community/embeddings/openai";
+
+const embeddings = new OpenAIEmbeddings({
+  openAIApiKey: process.env.OPENAI_API_KEY
+});
+
+const vectorStore = await PineconeStore.fromExistingIndex(
+  embeddings,
+  {
+    pineconeIndex: pineconeIndex,
+    namespace: "my-namespace" // Optional
+  }
+);
+
+// Add documents
+await vectorStore.addDocuments(docs);
+
+// Search
+const results = await vectorStore.similaritySearch("query", 5);
+```
+
+### Weaviate Integration
+```typescript
+import { WeaviateStore } from "@langchain/weaviate";
+
+const weaviateStore = await WeaviateStore.fromExistingIndex(
+  new OpenAIEmbeddings(),
+  {
+    client: weaviateClient,
+    indexName: "MyIndex",
+    textKey: "text",
+    metadataKeys: ["source"]
+  }
+);
+
+const retriever = weaviateStore.asRetriever({
+  k: 10,
+  filter: { where: { operator: "Equal", path: ["source"], valueText: "docs" } }
+});
+```
+
+### ChromaDB Integration
+```typescript
+import { Chroma } from "@langchain/community/vectorstores/chroma";
+
+const chromaStore = await Chroma.fromDocuments(
+  docs,
+  new OpenAIEmbeddings(),
+  {
+    collectionName: "my-collection",
+    url: "http://localhost:8000" // ChromaDB server URL
+  }
+);
+
+const results = await chromaStore.similaritySearch("query", 5);
+```
+
+## Document Loading Patterns
+
+### Web Content Loading
+```typescript
+import { WebBaseLoader } from "@langchain/community/document_loaders/web/web";
+
+const loader = new WebBaseLoader("https://example.com/article");
+const docs = await loader.load();
+
+// With cheerio for better HTML parsing
+import { CheerioWebBaseLoader } from "@langchain/community/document_loaders/web/cheerio";
+
+const cheerioLoader = new CheerioWebBaseLoader(
+  "https://example.com/blog-post",
+  {
+    selector: ".content", // Extract specific elements
+    textDecoder: new TextDecoder("utf-8")
+  }
+);
+const docs = await cheerioLoader.load();
+```
+
+### File System Loading
+```typescript
+import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
+import { TextLoader } from "langchain/document_loaders/fs/text";
+import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+
+const loader = new DirectoryLoader(
+  "./documents",
+  {
+    ".txt": (path) => new TextLoader(path),
+    ".pdf": (path) => new PDFLoader(path),
+    ".md": (path) => new TextLoader(path)
+  }
+);
+
+const docs = await loader.load();
+```
+
+### Custom Document Loaders
+```typescript
+import { BaseDocumentLoader } from "@langchain/core/document_loaders/base";
+import { Document } from "@langchain/core/documents";
+
+class CustomLoader extends BaseDocumentLoader {
+  constructor(private source: string) {
+    super();
+  }
+
+  async load(): Promise<Document[]> {
+    // Custom loading logic
+    const content = await this.fetchContent(this.source);
+    return [
+      new Document({
+        pageContent: content,
+        metadata: { source: this.source, timestamp: Date.now() }
+      })
+    ];
+  }
+
+  async loadAndSplit() {
+    const docs = await this.load();
+    return this.splitter ? this.splitter.splitDocuments(docs) : docs;
+  }
+}
+```
+
+## Retrieval-Augmented Generation (RAG)
+
+### Basic RAG Chain
+```typescript
+import { RetrievalQAChain } from "langchain/chains";
+import { CharacterTextSplitter } from "@langchain/textsplitters";
+
+const textSplitter = new CharacterTextSplitter({
+  chunkSize: 1000,
+  chunkOverlap: 200
+});
+
+const docs = await textSplitter.splitDocuments(rawDocs);
+await vectorStore.addDocuments(docs);
+
+const chain = RetrievalQAChain.fromLLM(
+  llm,
+  vectorStore.asRetriever({
+    k: 5,
+    filter: { source: "reliable" } // Optional filtering
+  })
+);
+
+const result = await chain.call({
+  query: "What is the main topic?"
+});
+```
+
+### Conversational RAG
+```typescript
+import { ConversationalRetrievalChain } from "langchain/chains";
+import { BufferMemory } from "langchain/memory";
+
+const chain = ConversationalRetrievalChain.fromLLM(
+  llm,
+  vectorStore.asRetriever(),
+  {
+    memory: new BufferMemory({
+      memoryKey: "chat_history",
+      returnMessages: true
+    }),
+    questionGeneratorChainOptions: {
+      template: "Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question."
+    }
+  }
+);
+
+const result1 = await chain.call({
+  question: "What is machine learning?"
+});
+
+const result2 = await chain.call({
+  question: "How does it relate to AI?"
+});
+```
+
+## Agent Patterns
+
+### Tool-Calling Agent
+```typescript
+import { ChatOpenAI } from "@langchain/openai";
+import { initializeAgentExecutorWithOptions } from "langchain/agents";
+import { SerpAPI } from "@langchain/community/tools/serpapi";
+import { Calculator } from "@langchain/community/tools/calculator";
+
+const llm = new ChatOpenAI({
+  temperature: 0,
+  model: "gpt-4"
+});
+
+const tools = [
+  new SerpAPI(process.env.SERPAPI_API_KEY),
+  new Calculator()
+];
+
+const executor = await initializeAgentExecutorWithOptions(
+  tools,
+  llm,
+  {
+    agentType: "openai-functions",
+    verbose: true,
+    maxIterations: 5,
+    returnIntermediateSteps: true
+  }
+);
+
+const result = await executor.call({
+  input: "What's the weather in Tokyo and what's 15 * 23?"
+});
+
+// Result includes intermediate steps
+console.log(result.intermediateSteps);
+```
+
+### ReAct Agent Pattern
+```typescript
+const reactExecutor = await initializeAgentExecutorWithOptions(
+  tools,
+  llm,
+  {
+    agentType: "zero-shot-react-description",
+    verbose: true,
+    maxIterations: 10
+  }
+);
+
+const result = await reactExecutor.call({
+  input: "Find the population of Paris and calculate what 20% of it would be"
+});
+```
+
+## Converting Runnables to Tools
+
+### Basic Tool Conversion
+```typescript
+import { RunnableConverter } from "langchain/tools/convert_to_tool";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { StrOutputParser } from "@langchain/core/output_parsers";
+
+// Create a complex chain
+const prompt = ChatPromptTemplate.fromTemplate(
+  "Answer this question as a pirate: {question}"
+);
+const model = new ChatOpenAI({ temperature: 0.7 });
+const parser = new StrOutputParser();
+
+const chain = prompt | model | parser;
+
+// Convert to tool
+const pirateTool = RunnableConverter(chain).to_tool();
+
+// Use in agent
+const tools = [pirateTool];
+const agent = await initializeAgentExecutorWithOptions(tools, llm, {
+  agentType: "openai-functions"
+});
+
+const result = await agent.call({
+  input: "Tell me about treasure hunting"
+});
+```
+
+## Error Handling and Resilience
+
+### Fallback Chains
+```typescript
+import { RunnableWithFallbacks } from "@langchain/core/runnables";
+
+const primaryChain = expensiveModelChain;
+const fallbackChain = cheaperModelChain;
+
+const resilientChain = primaryChain.withFallbacks({
+  fallbacks: [fallbackChain]
+});
+
+try {
+  const result = await resilientChain.invoke(input);
+} catch (error) {
+  console.error("All chains failed:", error);
+}
+```
+
+### Retry Logic
+```typescript
+const chainWithRetry = chain.withRetry({
+  stopAfterAttempt: 3,
+  onFailedAttempt: (error, attempt) => {
+    console.log(`Attempt ${attempt} failed:`, error.message);
+  },
+  backoffMultiplier: 2,
+  minDelayMs: 1000
+});
+
+const result = await chainWithRetry.invoke(input);
+```
+
+### Circuit Breaker Pattern
+```typescript
+import { RunnableLambda } from "@langchain/core/runnables";
+
+class CircuitBreaker {
+  private failures = 0;
+  private lastFailureTime = 0;
+  private readonly threshold = 5;
+  private readonly timeout = 60000; // 1 minute
+
+  async execute(chain: any, input: any) {
+    if (this.isOpen()) {
+      throw new Error("Circuit breaker is open");
+    }
+
+    try {
+      const result = await chain.invoke(input);
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      throw error;
+    }
+  }
+
+  private isOpen(): boolean {
+    if (this.failures >= this.threshold) {
+      return Date.now() - this.lastFailureTime < this.timeout;
+    }
+    return false;
+  }
+
+  private onSuccess() {
+    this.failures = 0;
+  }
+
+  private onFailure() {
+    this.failures++;
+    this.lastFailureTime = Date.now();
+  }
+}
+```
+
+## Performance Optimization
+
+### Streaming Implementation
+```typescript
+import { StreamingTextResponse } from "ai"; // For Next.js
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json();
+
+  const stream = await chain.stream({ input: prompt });
+
+  return new StreamingTextResponse(stream);
+}
+```
+
+### Caching Strategies
+```typescript
+import { InMemoryCache } from "@langchain/core/caches";
+
+// In-memory caching
+const cache = new InMemoryCache();
+const cachedLLM = llm.bind({ cache });
+
+// Redis caching (for production)
+import { RedisCache } from "@langchain/redis";
+
+const redisCache = new RedisCache({
+  client: redisClient,
+  ttl: 3600 // 1 hour
+});
+
+const cachedLLM = llm.bind({ cache: redisCache });
+```
+
+### Batch Processing
+```typescript
+// Process multiple inputs efficiently
+const inputs = [
+  { question: "What is AI?" },
+  { question: "What is ML?" },
+  { question: "What is DL?" }
+];
+
+const results = await chain.batch(inputs, {
+  maxConcurrency: 5 // Control parallelism
+});
+```
+
+## Testing Patterns
+
+### Unit Testing Chains
+```typescript
+import { jest } from "@jest/globals";
+
+describe("LangChain Integration", () => {
+  it("should process input correctly", async () => {
+    // Mock LLM responses
+    const mockLLM = {
+      invoke: jest.fn().mockResolvedValue({
+        content: "Mock response"
+      })
+    };
+
+    // Test chain composition
+    const testChain = prompt | mockLLM | outputParser;
+    const result = await testChain.invoke({ input: "test" });
+
+    expect(result).toBe("Mock response");
+    expect(mockLLM.invoke).toHaveBeenCalledWith(
+      expect.stringContaining("test")
+    );
+  });
+});
+```
+
+### Integration Testing
+```typescript
+describe("Full RAG Pipeline", () => {
+  let vectorStore: any;
+  let chain: any;
+
+  beforeAll(async () => {
+    // Setup test vector store
+    vectorStore = await Chroma.fromDocuments(
+      testDocs,
+      testEmbeddings,
+      { collectionName: "test" }
+    );
+
+    // Setup test chain
+    chain = RetrievalQAChain.fromLLM(
+      testLLM,
+      vectorStore.asRetriever()
+    );
+  });
+
+  it("should answer questions based on context", async () => {
+    const result = await chain.call({
+      query: "What is the main topic?"
+    });
+
+    expect(result.answer).toBeDefined();
+    expect(result.sourceDocuments).toHaveLength.greaterThan(0);
+  });
+});
+```
+
+## Production Deployment Patterns
+
+### Environment-Based Configuration
+```typescript
+const getLLMConfig = () => {
+  const env = process.env.NODE_ENV || "development";
+
+  switch (env) {
+    case "production":
+      return {
+        model: "gpt-4",
+        temperature: 0,
+        maxTokens: 1000
+      };
+    case "staging":
+      return {
+        model: "gpt-3.5-turbo",
+        temperature: 0.1,
+        maxTokens: 500
+      };
+    default:
+      return {
+        model: "gpt-3.5-turbo",
+        temperature: 0.7,
+        maxTokens: 200
+      };
+  }
+};
+
+const llm = new ChatOpenAI(getLLMConfig());
+```
+
+### Health Checks and Monitoring
+```typescript
+import { LangChainTracer } from "@langchain/core/tracers/tracer_langchain";
+
+const chain = new RetrievalQAChain({
+  llm,
+  retriever: vectorStore.asRetriever(),
+  callbacks: [
+    new LangChainTracer({
+      projectName: "my-production-app"
+    })
+  ]
+});
+
+// Health check endpoint
+export async function GET() {
+  try {
+    const result = await chain.call({
+      query: "ping"
+    });
+    return { status: "healthy", timestamp: Date.now() };
+  } catch (error) {
+    return { status: "unhealthy", error: error.message };
+  }
+}
+```
+
+### Resource Management
+```typescript
+// Connection pooling for vector stores
+const vectorStore = await PineconeStore.fromExistingIndex(
+  embeddings,
+  {
+    pineconeIndex,
+    // Connection pooling settings
+    maxConnections: 10,
+    connectionTimeout: 5000
+  }
+);
+
+// Rate limiting
+import { rateLimit } from "express-rate-limit";
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later."
+});
+```
+
+This comprehensive guide provides real-world integration patterns based on LangChain.js documentation, covering everything from basic LCEL usage to complex agent systems with proper error handling, testing, and production deployment considerations.

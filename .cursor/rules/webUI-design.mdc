@@ -1,0 +1,181 @@
+---
+description: This instruction provides a detailed specification for replicating the Neubrutalism design system used in Gitingest web applications.
+alwaysApply: false
+---
+# Neubrutalism Design System Specification for Web Apps
+
+This guide provides a comprehensive specification to replicate the **Neubrutalism** (Neo-Brutalism) design style used in Gitingest. Neubrutalism is a modern web design trend inspired by Brutalist architecture, emphasizing raw, unpolished aesthetics with bold contrasts, thick borders, playful shadows, and minimalist layouts. It avoids subtle gradients or rounded corners in favor of "brutal" honesty—think hand-drawn sketches, comic-book elements, and retro web vibes.
+
+Gitingest's implementation is built with **Tailwind CSS** (utility-first) embedded in **Jinja2 templates** (via FastAPI backend). No pre-built UI libraries (e.g., Bootstrap, Material UI) are used—everything is custom. The style features:
+- **High-contrast, playful elements**: Thick black borders, offset shadows for depth, hover "pops" (translations).
+- **Color palette**: Pastel neutrals with vibrant accents.
+- **Typography**: Bold, sans-serif fonts with tight tracking.
+- **Interactions**: Subtle hovers/transitions for tactility.
+- **Responsiveness**: Mobile-first with breakpoints (sm/md/lg).
+
+To replicate:
+1. Set up **Tailwind CSS** in your project (e.g., via CDN or npm).
+2. Use **Jinja2** (or equivalent templating) for dynamic HTML.
+3. Copy/adapt the components below.
+4. Ensure global styles (e.g., body bg, fonts) are applied.
+
+## 1. Setup Requirements
+- **Frontend Framework**: Tailwind CSS (v3+). Add via CDN: `<script src="https://cdn.tailwindcss.com"></script>`.
+- **Templating**: Jinja2 for dynamic rendering (e.g., in FastAPI: `Jinja2Templates(directory="templates")`).
+- **Fonts**: System sans-serif (e.g., `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`). Add custom if needed: `@font-face` or Google Fonts.
+- **Icons/SVGs**: Custom SVGs (e.g., sparkles, logos). Store in `/static/svg/` and reference absolutely.
+- **Build Tools**: Optional PostCSS for production; ESLint for JS consistency.
+- **Custom Tailwind Config**: Extend with plugins if needed (e.g., for forms). Base config:
+  ```js
+  // tailwind.config.js
+  module.exports = {
+    theme: {
+      extend: {
+        colors: {
+          'primary-bg': '#FFFDF8', // Beige background
+          'accent-orange': '#FFC480', // Buttons, hovers
+          'accent-red': '#FE4A60', // Badges, accents
+          'border-black': '#000', // Borders/shadows
+          'text-dark': '#111', // Main text
+        },
+        boxShadow: {
+          'brutal': '3px 3px 0 #000', // Standard shadow
+          'badge': '2px 2px 0 rgba(0,0,0,1)', // Smaller for badges
+        },
+        translate: {
+          'px': '1px', // For hover offsets
+        },
+      },
+    },
+    plugins: [],
+  };
+  ```
+
+## 2. Global Styles & Layout
+- **Body/Base**: 
+  - Background: `bg-[#FFFDF8]` (light beige).
+  - Text: `text-gray-900` (near-black).
+  - Min-height: `min-h-screen flex flex-col`.
+- **Container**: Center content with `max-w-4xl mx-auto px-4`.
+- **Borders**: Universal `border-[3px] border-gray-900` on interactive elements (inputs, buttons, cards).
+- **Shadows**: `shadow-[3px_3px_0_#000]` for depth (e.g., buttons, checkboxes).
+- **Transitions**: `transition-transform duration-200 ease-out` for hovers (e.g., `hover:-translate-y-px hover:-translate-x-px`).
+- **Responsive Breakpoints**: Use Tailwind's defaults (sm:640px, md:768px, lg:1024px). E.g., `grid-cols-1 md:grid-cols-12`.
+- **Custom Utilities** (add to `<style type="text/tailwindcss">` or config):
+  ```css
+  @layer utilities {
+    .no-drag { /* Prevent image dragging */
+      @apply pointer-events-none select-none;
+      -webkit-user-drag: none;
+    }
+    .link-bounce { /* Hover lift */
+      @apply transition-transform hover:-translate-y-0.5;
+    }
+  }
+  ```
+
+## 3. Color Palette (Hex Codes)
+- **Neutrals**:
+  - Background: `#FFFDF8` (light beige, main body).
+  - Card/Section BG: `#FAFAFA` (off-white), `#FFF4DA` (warm yellow for forms/cards).
+  - Text Primary: `#111827` (gray-900, dark gray).
+  - Text Secondary: `#4B5563` (gray-600).
+  - Borders/Shadows: `#000` (pure black).
+- **Accents**:
+  - Primary: `#FFC480` (orange-yellow, buttons/hovers).
+  - Red: `#FE4A60` (badges, accents, errors).
+  - Green: `#EBDBB7` (subtle buttons, e.g., examples).
+  - Input BG: `#E8F0FE` (light blue-gray).
+- **Usage Rule**: High contrast (black borders on light BG). Accents for interactive elements. No gradients/subtleties.
+
+## 4. Typography
+- **Fonts**: Sans-serif stack (system defaults). Bold for emphasis.
+- **Sizes/Weights**:
+  - Title (H1): `text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter`.
+  - Intro/Body: `text-lg text-gray-600`.
+  - Labels/Buttons: `text-lg font-medium`.
+  - Small Text: `text-sm text-gray-600`.
+  - Code/Mono: `font-mono text-sm` (for trees/content).
+- **Custom**: Tight tracking (`tracking-tighter`) for headers. Center-align intros.
+
+## 5. Components
+Replicate by copying Tailwind classes into your HTML/Jinja. All use borders/shadows for Neubrutalist feel.
+
+### 5.1 Navbar
+- Structure: Flex row, `sticky top-0 bg-[#FFFDF8] border-b-[3px] border-gray-900`.
+- Logo: `text-2xl font-bold` (split colors: `text-gray-900` + `text-[#FE4A60]` for "ingest").
+- Links: `flex space-x-6`, with `.link-bounce` (hover lift).
+- GitHub Link: Flex with SVG icon (`w-4 h-4`), star count badge.
+- Example:
+  ```html
+  <header class="sticky top-0 bg-[#FFFDF8] border-b-[3px] border-gray-900 z-50">
+    <div class="max-w-4xl mx-auto px-4">
+      <div class="flex justify-between items-center h-16">
+        <h1 class="text-2xl font-bold tracking-tight">
+          <a href="/" class="hover:opacity-80 transition-opacity">
+            <span class="text-gray-900">Git</span><span class="text-[#FE4A60]">ingest</span>
+          </a>
+        </h1>
+        <nav class="flex items-center space-x-6">
+          <a href="/llms.txt" class="link-bounce text-gray-900">/llms.txt</a>
+          <a href="https://github.com/..." class="link-bounce flex items-center gap-1.5 text-gray-900">
+            <img src="/static/icons/github.svg" class="w-4 h-4">
+            GitHub
+          </a>
+          <!-- Star counter -->
+          <div class="flex items-center text-sm text-gray-600">
+            <img src="/static/svg/github-star.svg" class="w-4 h-4 mr-1">
+            <span id="github-stars">0</span>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </header>
+  ```
+
+### 5.2 Buttons
+- Base: `px-4 py-2 bg-[#ffc480] border-[3px] border-gray-900 text-gray-900 rounded group-hover:-translate-y-px group-hover:-translate-x-px transition-transform`.
+- Variants: Submit (`tracking-wide text-lg`), Example (`bg-[#EBDBB7] hover:bg-[#FFC480]`).
+- Shadows: `shadow-[3px_3px_0_#000]`.
+- Hover: Offset translation + color change.
+- Example: Ingest button in form.
+
+### 5.3 Inputs/Forms
+- Input: `border-[3px] border-gray-900 placeholder-gray-600 text-lg font-medium py-3.5 px-6 rounded bg-[#E8F0FE] focus:outline-none`.
+- Select: `appearance-none pr-6 pl-2 py-2 bg-[#e6e8eb] border-r-[3px] border-gray-900`.
+- Slider: Custom thumb (`[&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-[3px] border-gray-900 [&::-webkit-slider-thumb]:shadow-[3px_3px_0_#000]`), gradient BG.
+- Checkbox: Custom SVG checkmark with scale animation.
+- Tooltip: Absolute positioned, `bg-gray-900 text-white text-xs py-1 px-2 rounded shadow-lg opacity-0 peer-hover:opacity-100`.
+- Form Wrapper: `rounded-xl border-[3px] border-gray-900 bg-[#fff4da] p-8` with offset shadow BG.
+
+### 5.4 Badges (e.g., "NEW")
+- Style: `.badge-new`: `inline-block -rotate-6 -translate-y-1 px-1 bg-[#FE4A60] border border-gray-900 text-white text-[10px] font-bold shadow-[2px_2px_0_rgba(0,0,0,1)]`.
+
+### 5.5 Cards/Sections
+- Wrapper: `bg-[#fafafa] rounded-xl border-[3px] border-gray-900 p-6` with offset BG.
+- Results: Textareas with `font-mono text-sm resize-y bg-[#fff4da]`.
+
+### 5.6 Icons & SVGs
+- Sparkles: Positioned absolutely (e.g., `.sparkle-red: absolute left-0 -translate-x-2`).
+- Others: Inline SVGs for GitHub, Discord, etc. (`w-4 h-4`).
+
+### 5.7 Footer
+- Grid: `grid-cols-2`, links with icons (`flex items-center gap-2`).
+
+## 6. Interactions & Animations
+- **Hover**: `group-hover:-translate-y-px group-hover:-translate-x-px` (button press effect).
+- **Transitions**: `transition-transform duration-200 ease-out`.
+- **Checkbox**: Scale animation on check (`scale-0 peer-checked:scale-100`).
+- **Loader**: Spinner with `animate-spin`.
+- **Copy/Download Feedback**: Temp text change (e.g., "Copied!" for 1-2s).
+- **JS Helpers**: Event listeners for sliders (update label), toggles, copies.
+
+## 7. Replication Steps
+1. **Install Tailwind**: CDN or npm.
+2. **Copy Templates**: Base layout, components into Jinja/HTML.
+3. **Apply Classes**: Match utilities/layers.
+4. **Add JS**: For interactions (e.g., copyText, toggleFile).
+5. **Test Responsiveness**: Use dev tools for breakpoints.
+6. **Customize**: Adjust colors/shadows for your brand.
+
+This spec ensures a faithful replication—raw, playful, and functional like Gitingest!

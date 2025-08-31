@@ -1,0 +1,298 @@
+---
+alwaysApply: false
+description: Project planning and tracking system with comprehensive implementation strategies
+---
+# Project Planning and Tracking System
+
+## Project Plan Structure
+
+### Core Project Documents
+1. **Epic Plan**: `/docs/ways-of-work/plan/{epic-name}/epic.md`
+   - Business objectives and success metrics
+   - Key milestones and deliverables
+   - Risk assessment and mitigation strategies
+
+2. **Feature PRD**: `/docs/ways-of-work/plan/{epic-name}/{feature-name}.md`
+   - Detailed feature requirements
+   - User stories and acceptance criteria
+   - Technical specifications
+
+3. **Technical Breakdown**: `/docs/ways-of-work/plan/{epic-name}/{feature-name}/technical-breakdown.md`
+   - Architecture and design decisions
+   - Implementation approach and technologies
+   - Integration points and dependencies
+
+4. **Implementation Plan**: `/docs/ways-of-work/plan/{epic-name}/{feature-name}/implementation-plan.md`
+   - Detailed execution steps with atomic phases
+   - Task breakdown with specific file paths
+   - Testing and validation criteria
+
+5. **Project Plan**: `/docs/ways-of-work/plan/{epic-name}/{feature-name}/project-plan.md`
+   - GitHub issue breakdown and hierarchy
+   - Sprint planning and capacity management
+   - Dependency management and tracking
+
+6. **Issue Checklist**: `/docs/ways-of-work/plan/{epic-name}/{feature-name}/issues-checklist.md`
+   - Automated issue creation checklist
+   - Status tracking and validation
+   - Quality assurance completion criteria
+
+## Project Plan Template Structure
+
+### 1. Project Overview
+```markdown
+## Feature Summary
+[Brief description and business value]
+
+## Success Criteria
+[Measurable outcomes and KPIs]
+
+## Key Milestones
+[Breakdown of major deliverables without specific timelines]
+
+## Risk Assessment
+[Potential blockers and mitigation strategies]
+```
+
+### 2. Work Item Hierarchy
+```mermaid
+graph TD
+    A[Epic: {Epic Name}] --> B[Feature: {Feature Name}]
+    B --> C[Story 1: {User Story}]
+    B --> D[Story 2: {User Story}]
+    B --> E[Enabler 1: {Technical Work}]
+    B --> F[Enabler 2: {Infrastructure}]
+    C --> G[Task: Frontend Implementation]
+    C --> H[Task: API Integration]
+    C --> I[Test: E2E Scenarios]
+    D --> J[Task: Component Development]
+    D --> K[Task: State Management]
+    D --> L[Test: Unit Tests]
+    E --> M[Task: Database Schema]
+    E --> N[Task: Migration Scripts]
+    F --> O[Task: CI/CD Pipeline]
+    F --> P[Task: Monitoring Setup]
+```
+
+### 3. Sprint Planning Template
+```markdown
+## Sprint {N} Goal
+**Primary Objective**: {Main deliverable for this sprint}
+
+**Stories in Sprint**:
+- #{issue} - {Story title} ({points} pts)
+- #{issue} - {Story title} ({points} pts)
+
+**Total Commitment**: {points} story points
+**Success Criteria**: {Measurable outcomes}
+```
+
+### 4. Dependency Management
+```mermaid
+graph LR
+    A[Epic Planning] --> B[Feature Definition]
+    B --> C[Enabler Implementation]
+    C --> D[Story Development]
+    D --> E[Testing Execution]
+    E --> F[Feature Delivery]
+    G[Infrastructure Setup] --> C
+    H[API Design] --> D
+    I[Database Schema] --> C
+    J[Authentication] --> D
+```
+
+## Issue Creation and Automation
+
+### Automated Issue Creation Workflow
+1. **Epic Creation**: Parent epic with business objectives
+2. **Feature Creation**: Linked to epic with user stories
+3. **Story Breakdown**: Individual user stories with acceptance criteria
+4. **Enabler Identification**: Technical work supporting stories
+5. **Test Definition**: Quality assurance requirements
+6. **Task Creation**: Specific implementation work
+
+### Issue Template Integration
+- **Epic Template**: Business objectives and success metrics
+- **Feature Template**: User stories and technical enablers
+- **Story Template**: Acceptance criteria and technical tasks
+- **Enabler Template**: Technical requirements and implementation tasks
+- **Test Template**: Test cases and automation requirements
+- **Task Template**: Specific implementation details
+
+## Tracking and Monitoring
+
+### Project Board Configuration
+1. **Backlog**: Prioritized and ready for planning
+2. **Sprint Ready**: Detailed and estimated, ready for development
+3. **In Progress**: Currently being worked on
+4. **In Review**: Code review, testing, or stakeholder review
+5. **Testing**: QA validation and acceptance testing
+6. **Done**: Completed and accepted
+
+### Custom Field Tracking
+- **Priority**: P0, P1, P2, P3 (business urgency)
+- **Value**: High, Medium, Low (business value)
+- **Component**: Frontend, Backend, Infrastructure, Testing
+- **Estimate**: Story points or t-shirt size
+- **Sprint**: Current sprint assignment
+- **Assignee**: Responsible team member
+- **Epic**: Parent epic reference
+
+### Status Update Automation
+```yaml
+name: Update Issue Status
+on:
+  pull_request:
+    types: [opened, closed]
+  issues:
+    types: [labeled, unlabeled]
+
+jobs:
+  update-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Move to In Review
+        if: github.event.action == 'opened'
+        uses: actions/github-script@v7
+        # Move related issues to "In Review" column
+
+      - name: Move to Done
+        if: github.event.action == 'closed' && github.event.pull_request.merged
+        uses: actions/github-script@v7
+        # Move related issues to "Done" column
+```
+
+## Quality Assurance Integration
+
+### Definition of Ready (DoR)
+Work items must meet these criteria before being worked on:
+- [ ] Business value clearly identified
+- [ ] Acceptance criteria defined and testable
+- [ ] Dependencies identified and resolved
+- [ ] Estimated and sized appropriately
+- [ ] Technical approach agreed upon
+- [ ] UX/design requirements complete
+
+### Definition of Done (DoD)
+Work items are complete when all criteria are met:
+- [ ] Code implemented and functional
+- [ ] Unit tests written and passing
+- [ ] Integration tests passing
+- [ ] Code review approved
+- [ ] Documentation updated
+- [ ] UX requirements implemented
+- [ ] Accessibility requirements met
+- [ ] Performance requirements met
+
+### Testing Integration
+- **Unit Tests**: Individual function/component testing
+- **Integration Tests**: Component interaction validation
+- **E2E Tests**: Complete user workflow testing
+- **Performance Tests**: Load and performance validation
+- **Security Tests**: Vulnerability and security testing
+
+## Metrics and Success Tracking
+
+### Project Management KPIs
+- **Sprint Predictability**: >80% of committed work completed per sprint
+- **Cycle Time**: Average time from "In Progress" to "Done" <5 business days
+- **Lead Time**: Average time from "Backlog" to "Done" <2 weeks
+- **Defect Escape Rate**: <5% of stories require post-release fixes
+
+### Process Efficiency Metrics
+- **Issue Creation Time**: <1 hour to create full feature breakdown
+- **Dependency Resolution**: <24 hours to resolve blocking dependencies
+- **Status Update Accuracy**: >95% automated status transitions working
+- **Documentation Completeness**: 100% of issues have required template fields
+
+### Delivery Quality Metrics
+- **Definition of Done Compliance**: 100% of completed stories meet DoD criteria
+- **Acceptance Criteria Coverage**: 100% of acceptance criteria validated
+- **Sprint Goal Achievement**: >90% of sprint goals successfully delivered
+- **Planning Accuracy**: <10% variance between estimated and actual delivery time
+
+## Risk Management and Mitigation
+
+### Risk Categories
+1. **Technical Risks**: Implementation complexity, integration issues, performance problems
+2. **Business Risks**: User adoption, market changes, competitive response
+3. **Execution Risks**: Team capability gaps, timeline slippage, dependency issues
+4. **Strategic Risks**: Misalignment with business objectives, changing priorities
+
+### Risk Assessment Framework
+```markdown
+## Risk Assessment Template
+
+### Risk: [Risk Description]
+- **Probability**: High/Medium/Low
+- **Impact**: High/Medium/Low
+- **Detection**: How will we know if this occurs?
+- **Mitigation**: What actions will prevent or reduce this risk?
+- **Contingency**: What will we do if this risk materializes?
+- **Owner**: Who is responsible for monitoring this risk?
+```
+
+### Risk Tracking
+- **Risk Register**: Centralized tracking of all identified risks
+- **Risk Reviews**: Regular assessment of risk status and mitigation effectiveness
+- **Escalation Process**: Clear process for escalating high-impact risks
+- **Lesson Learning**: Documentation of risk events and response effectiveness
+
+## Stakeholder Communication
+
+### Communication Plan
+- **Sprint Reviews**: Stakeholder feedback and acceptance
+- **Sprint Retrospectives**: Process improvement and team learning
+- **Status Reports**: Regular updates on progress and blockers
+- **Release Planning**: Major milestone communication and coordination
+
+### Status Reporting Templates
+```markdown
+## Sprint {N} Status Report
+
+### Sprint Goal Achievement
+- [ ] {Goal 1} - {Status: Completed/In Progress/Blocked}
+- [ ] {Goal 2} - {Status: Completed/In Progress/Blocked}
+
+### Key Accomplishments
+- {Major deliverable 1}
+- {Major deliverable 2}
+
+### Blockers and Issues
+- {Blocker 1} - {Mitigation plan}
+- {Blocker 2} - {Mitigation plan}
+
+### Next Sprint Preview
+- {Planned work for next sprint}
+```
+
+## Tool Integration and Automation
+
+### Development Tool Integration
+You WILL integrate with available development tools:
+
+**Code Analysis Tools**:
+- `codebase`: System architecture and component relationships
+- `search`/`searchResults`: Pattern discovery and code analysis
+- `usages`: Component interaction and dependency mapping
+- `problems`: Issue identification and constraint analysis
+- `findTestFiles`: Testing patterns and coverage assessment
+
+**External Research Tools**:
+- `fetch`: Latest documentation and standards
+- `githubRepo`: Repository patterns and implementation analysis
+- `extensions`: Tool and integration capability assessment
+
+**Development Support**:
+- `runCommands`: Command execution and validation
+- `runTerminalCmd`: Terminal-based testing and verification
+- `editFiles`: File modification and implementation support
+
+### Automation Strategy
+1. **Issue Creation**: Automated creation of work item hierarchy
+2. **Status Updates**: Automated movement through project board columns
+3. **Dependency Tracking**: Automated identification of blocking relationships
+4. **Quality Gates**: Automated validation of DoR and DoD criteria
+5. **Reporting**: Automated generation of progress and status reports
+
+This comprehensive project planning and tracking system ensures complete traceability from epic-level business objectives down to individual implementation tasks, with automated tracking, quality assurance, and stakeholder communication throughout the development lifecycle.

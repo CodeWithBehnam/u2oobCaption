@@ -1,0 +1,34 @@
+---
+alwaysApply: false
+description: When the user says "PMP, <request>", refine the request into a high‑quality task prompt before doing anything else.
+---
+# PMP Prompt Refinement Protocol
+
+Trigger: When the user starts a message with `PMP, <request>`.
+
+Goal: Create a high‑quality, detailed task prompt the user approves before any implementation.
+
+Constraints
+- Do NOT write any code during this phase.
+- Ask clarification questions ONE AT A TIME when required.
+- Use available tools to gather information as needed.
+
+Process
+1. Parse `<request>` and restate the task scope and objectives in your own words.
+2. Define explicit deliverables and success criteria (what artifacts, formats, acceptance tests).
+3. Clarify technical and procedural requirements (tech stack, APIs, data, performance/security, review/build steps).
+4. Identify assumptions and risks; list unknowns that need confirmation.
+5. Ask a single, specific clarification question if something important is missing. If multiple are missing, ask them sequentially, one per turn.
+6. Once sufficient info is gathered, produce the improved prompt:
+   - Context and objectives
+   - Inputs and constraints
+   - Deliverables and success criteria
+   - Step‑by‑step plan / milestones
+   - Review/verification plan
+7. End by asking: “Do you want any changes or additions?”
+
+Notes
+- Keep language concise and actionable.
+- Prefer numbered lists and bullet points for readability.
+- If the task involves external docs or APIs, state which sources will be consulted.
+

@@ -1,0 +1,254 @@
+---
+alwaysApply: false
+description: Quick reference guide for planning system usage and integration
+---
+# Planning System Quick Reference
+
+## System Overview
+
+### Two Integrated Planning Modes
+
+**Implementation Plan Mode** (Deterministic Execution):
+- Generates fully executable implementation plans
+- Uses structured templates with atomic phases
+- Focuses on measurable completion criteria
+- Designed for AI/human execution without interpretation
+
+**Strategic Planning Mode** (Thoughtful Analysis):
+- Provides comprehensive analysis before implementation
+- Focuses on understanding context and building strategy
+- Emphasizes collaboration and requirement clarification
+- Considers long-term implications and architecture
+
+## Quick Start Guide
+
+### When to Use Each Mode
+
+**Use Implementation Plan Mode For**:
+- Creating detailed execution plans for known requirements
+- Breaking down work into specific, actionable tasks
+- Generating plans for AI agents to execute
+- When requirements are well-understood and stable
+
+**Use Strategic Planning Mode For**:
+- Understanding new or complex requirements
+- Exploring codebase architecture and patterns
+- Clarifying ambiguous or unclear objectives
+- Planning major architectural changes
+
+**Use Both Modes For**:
+- Comprehensive project planning
+- Complex feature development
+- System refactoring or upgrades
+- Major architectural decisions
+
+## Implementation Plan Quick Reference
+
+### Template Structure
+```markdown
+---
+goal: [Brief goal description]
+version: [1.0]
+date_created: [YYYY-MM-DD]
+status: [Planned|In progress|Completed]
+tags: [feature, architecture, etc.]
+---
+
+# Introduction
+![Status: ](https://img.shields.io/badge/status-Planned-blue)
+[Brief introduction]
+
+## 1. Requirements & Constraints
+- **REQ-001**: [Requirement]
+- **CON-001**: [Constraint]
+
+## 2. Implementation Steps
+### Phase 1 - GOAL-001: [Goal]
+| Task | Description | Completed | Date |
+|------|-------------|-----------|------|
+| TASK-001 | [Specific task with file paths] | | |
+
+## 3. Alternatives
+- **ALT-001**: [Alternative with rationale]
+
+## 4. Dependencies
+- **DEP-001**: [Dependency with version]
+
+## 5. Files
+- **FILE-001**: [Affected file description]
+
+## 6. Testing
+- **TEST-001**: [Test specification]
+
+## 7. Risks & Assumptions
+- **RISK-001**: [Risk with mitigation]
+- **ASSUMPTION-001**: [Assumption with validation]
+
+## 8. Related Specifications
+[Links to documentation]
+```
+
+### Plan File Naming Convention
+```
+/plan/[purpose]-[component]-[version].md
+
+Purpose: upgrade, refactor, feature, data, infrastructure, process, architecture, design
+Examples:
+- feature-translation-api-1.0.md
+- refactor-caching-system-2.1.md
+- upgrade-dependency-versions-3.0.md
+- architecture-extension-structure-1.2.md
+```
+
+### Task Specification Standards
+- **Include exact file paths**: `src/components/TranslationButton.jsx`
+- **Specify line numbers**: `lines 45-67`
+- **Name functions/methods**: `handleTranslationClick()`
+- **Provide complete context**: No external interpretation needed
+- **Define variables/constants**: `const API_TIMEOUT = 5000`
+
+## Strategic Planning Quick Reference
+
+### Information Gathering Workflow
+1. **Understand Goal**: What exactly needs to be accomplished?
+2. **Explore Context**: What files/components are relevant?
+3. **Identify Constraints**: What limitations affect implementation?
+4. **Clarify Scope**: How extensive should changes be?
+
+### Planning Interaction Pattern
+1. **Review Existing Code**: How is similar functionality implemented?
+2. **Identify Integration Points**: Where does new code connect?
+3. **Plan Step-by-Step**: What's the logical implementation sequence?
+4. **Consider Testing**: How will implementation be validated?
+
+### Complex Problem Handling
+1. **Break Down Problems**: Divide into manageable components
+2. **Research Patterns**: Find existing solutions to follow
+3. **Evaluate Trade-offs**: Consider different approaches
+4. **Seek Clarification**: Ask questions when requirements unclear
+
+## Tool Integration Reference
+
+### Primary Planning Tools
+
+**Code Analysis**:
+- `codebase`: System architecture and component relationships
+- `search`/`searchResults`: Pattern discovery and code analysis
+- `usages`: Component interaction and dependency mapping
+- `problems`: Issue identification and constraint analysis
+- `findTestFiles`: Testing patterns and coverage assessment
+
+**External Research**:
+- `fetch`: Latest documentation and standards
+- `githubRepo`: Repository patterns and implementation analysis
+- `extensions`: Tool and integration capability assessment
+
+**Development Support**:
+- `runCommands`: Command execution and validation
+- `runTerminalCmd`: Terminal-based testing and verification
+- `editFiles`: File modification and implementation support
+
+### Tool Usage by Planning Phase
+
+**Research Phase**:
+- Use `codebase` for comprehensive system understanding
+- Use `search` to find specific patterns and implementations
+- Use `githubRepo` and `fetch` for external research and comparison
+
+**Planning Phase**:
+- Use `problems` to identify implementation challenges
+- Use `findTestFiles` to understand testing requirements
+- Use `usages` to understand system interactions
+
+**Validation Phase**:
+- Use `runCommands` to test implementation approaches
+- Use `editFiles` to validate specific implementation details
+- Use `searchResults` to verify pattern consistency
+
+## Common Planning Scenarios
+
+### New Feature Development
+1. **Strategic**: Understand user needs and business context
+2. **Implementation**: Create detailed plan with specific tasks
+3. **Integration**: Plan component integration and data flow
+4. **Testing**: Define comprehensive testing strategy
+
+### System Refactoring
+1. **Strategic**: Analyze current architecture and pain points
+2. **Implementation**: Plan incremental refactoring steps
+3. **Dependencies**: Map component dependencies and interactions
+4. **Validation**: Ensure no regression in functionality
+
+### Infrastructure Changes
+1. **Strategic**: Evaluate infrastructure requirements and constraints
+2. **Implementation**: Plan deployment and configuration changes
+3. **Dependencies**: Identify external service dependencies
+4. **Testing**: Plan infrastructure validation and monitoring
+
+### Architecture Modernization
+1. **Strategic**: Assess current architecture and modernization opportunities
+2. **Implementation**: Plan architectural changes and migrations
+3. **Integration**: Plan component integration and compatibility
+4. **Validation**: Define success criteria and performance benchmarks
+
+## Quality Checklists
+
+### Implementation Plan Quality
+- [ ] All requirements explicitly documented with REQ- prefixes
+- [ ] Tasks include specific file paths and function names
+- [ ] Dependencies clearly identified and managed
+- [ ] Testing criteria defined and measurable
+- [ ] Risks identified with mitigation strategies
+- [ ] No placeholder text remaining
+- [ ] Template validation rules followed
+
+### Strategic Planning Quality
+- [ ] Context fully explored and understood
+- [ ] Multiple approaches considered and evaluated
+- [ ] Long-term implications analyzed
+- [ ] Architecture and design patterns considered
+- [ ] Team capabilities and constraints addressed
+- [ ] Business objectives and success criteria clear
+
+## Communication Guidelines
+
+### Plan Presentation
+- **Executive Summary**: High-level overview for stakeholders
+- **Technical Details**: Specific implementation information for developers
+- **Risk Assessment**: Clear identification of challenges and mitigations
+- **Timeline and Resources**: Realistic estimates and requirements
+
+### Status Communication
+- **Planned**: Initial plan, under review
+- **In progress**: Active implementation phase
+- **Completed**: Successfully executed
+- **Deprecated**: No longer valid
+- **On Hold**: Implementation paused
+
+### Progress Updates
+- **Weekly Status**: High-level progress and blockers
+- **Daily Standups**: Specific task progress and immediate issues
+- **Milestone Reviews**: Major phase completions and adjustments
+- **Final Review**: Comprehensive implementation assessment
+
+## Troubleshooting Common Issues
+
+### Plan Execution Problems
+- **Unclear Tasks**: Add more specific details and context
+- **Missing Dependencies**: Use tools to identify all dependencies
+- **Timeline Issues**: Break large tasks into smaller, manageable pieces
+- **Resource Conflicts**: Clarify resource requirements and availability
+
+### Planning Process Issues
+- **Unclear Requirements**: Ask more clarifying questions
+- **Scope Creep**: Re-evaluate and adjust scope boundaries
+- **Technical Debt**: Plan for addressing technical debt
+- **Team Alignment**: Ensure all stakeholders understand and agree
+
+### Tool Usage Issues
+- **Tool Selection**: Match tools to specific planning needs
+- **Information Overload**: Focus on most relevant information
+- **Context Loss**: Maintain clear documentation of decisions
+- **Integration Gaps**: Ensure all tools work together effectively
+
+This quick reference guide provides essential information for effective planning system usage, helping you choose the right approach and execute successful implementation plans.

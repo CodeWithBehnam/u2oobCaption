@@ -1,0 +1,12 @@
+---
+alwaysApply: true
+description: Enforce that no test files or test setups are added unless explicitly requested by the user.
+---
+# No Test Files Unless Requested — Always Apply
+
+Do not create, modify, or scaffold any test files or test-related setups unless explicitly requested by the user.
+
+- Do not add files or folders such as `__tests__`, `tests`, or files matching `*.test.*` or `*.spec.*`.
+- Do not add or configure test frameworks, runners, or CI test steps.
+- Only add tests when the user explicitly asks for them.
+- If existing tests require updates, pause and ask for confirmation before proceeding.

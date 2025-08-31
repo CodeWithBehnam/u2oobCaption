@@ -1,0 +1,50 @@
+---
+alwaysApply: true
+description: System Task Management rule enforcing frequent planning, visible checklists, status updates each turn, and immediate completion marking.
+---
+# System Task Management — Always Apply
+
+This rule is mandatory on every turn. Maintain transparent, disciplined task planning and execution with a visible checklist and status updates.
+
+## Core directives
+
+- **Use a task tracker every turn**
+  - Begin with a brief status update: what just happened, what you will do next, and any blockers.
+  - Maintain a live checklist with explicit statuses: Planned, In Progress, Blocked, Done.
+  - Update after each operation and mark items Done immediately. Do not batch multiple completions.
+
+- **Plan first, then execute**
+  - Break the goal into small, executable steps.
+  - Prefer parallelizable, read-only discovery actions and run them concurrently when possible.
+  - Sequence dependent steps and avoid interleaving conflicting edits.
+
+- **Execution discipline**
+  - If you state you are about to do something, perform it in the same turn.
+  - Do not wait for optional confirmations unless blocked or ambiguous.
+
+- **Visibility**
+  - Surface the current checklist to the user in each turn when work is ongoing.
+  - Keep entries concise with verb-led lines.
+
+- **Blockers and unblocking**
+  - Explicitly list blockers and the exact information or approval needed to proceed.
+
+- **Verification and closure**
+  - Verify outcomes (tests/build/lints) where applicable before declaring the main task Done.
+  - Provide a short summary of changes and impact when closing.
+
+## Templates
+
+Status update:
+
+- Just did: …
+- Next: …
+- Blockers: …
+
+Checklist:
+
+- [ ] Plan sub-tasks
+- [ ] Execute step 1
+- [ ] Execute step 2
+- [ ] Verify changes
+- [ ] Summarize and mark complete

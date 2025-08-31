@@ -1,0 +1,192 @@
+---
+alwaysApply: false
+description: LangChain.js documentation and resource navigation
+---
+
+# LangChain.js Documentation and Resources
+
+## Primary Documentation Sources
+
+### Official Documentation
+- **Main Site**: https://js.langchain.com
+- **Getting Started**: https://js.langchain.com/docs/introduction
+- **Tutorials**: https://js.langchain.com/docs/tutorials/
+- **API Reference**: https://api.js.langchain.com
+
+### Version-Specific Documentation
+- **v0.3** (Latest): https://v03.api.js.langchain.com
+- **v0.2**: https://v02.api.js.langchain.com
+- **v0.1**: https://v01.api.js.langchain.com
+
+## Documentation Structure
+
+### Core Concepts
+- **LCEL**: LangChain Expression Language
+  - Documentation: https://js.langchain.com/docs/concepts/lcel
+  - Purpose: Composable chain building
+- **Components**: Reusable building blocks
+  - Documentation: https://js.langchain.com/docs/concepts
+  - Types: LLMs, Prompts, Chains, Agents, etc.
+- **Integrations**: Third-party service connections
+  - Documentation: https://js.langchain.com/docs/integrations/platforms/
+  - Categories: LLMs, Vector Stores, Tools, etc.
+
+### Application Types
+
+#### Question Answering
+```typescript
+// RAG (Retrieval-Augmented Generation)
+import { RetrievalQAChain } from "langchain/chains";
+import { OpenAIEmbeddings } from "@langchain/community/embeddings/openai";
+import { PineconeStore } from "@langchain/pinecone";
+
+// Documentation: https://js.langchain.com/docs/tutorials/rag/
+// Example: https://github.com/dissorial/doc-chatbot
+```
+
+#### Chatbots
+```typescript
+// Conversational AI
+import { ConversationChain } from "langchain/chains";
+import { BufferMemory } from "langchain/memory";
+
+// Documentation: https://js.langchain.com/docs/tutorials/chatbot
+// Example: https://github.com/langchain-ai/chat-langchain
+```
+
+## Learning Resources
+
+### Tutorials and Guides
+1. **Getting Started**
+   - Installation and basic setup
+   - First chain creation
+   - Simple Q&A application
+
+2. **Intermediate Concepts**
+   - Custom chains and agents
+   - Memory and conversation management
+   - Integration with external APIs
+
+3. **Advanced Topics**
+   - LangGraph.js for complex workflows
+   - Production deployment patterns
+   - Performance optimization
+
+### Video Resources
+- **YouTube Channel**: LangChain official videos
+- **Conference Talks**: LangChain at major AI conferences
+- **Live Streams**: Regular development updates and Q&A
+
+### Example Applications
+- **GitHub Repositories**: Official examples and community projects
+- **CodeSandbox**: Interactive playground for experimentation
+- **Replit**: Collaborative coding environment
+
+## Community Resources
+
+### Discussion Forums
+- **LangChain Forum**: https://forum.langchain.com
+- **Discord Community**: Active developer discussions
+- **Reddit**: r/LangChain and r/MachineLearning
+
+### Social Media
+- **Twitter/X**: @LangChainAI for updates and announcements
+- **LinkedIn**: Company page and developer community
+- **GitHub**: Repository discussions and issue tracking
+
+## Development Tools
+
+### LangSmith
+- **Purpose**: Testing, monitoring, and evaluation platform
+- **Documentation**: https://docs.smith.langchain.com/
+- **Features**:
+  - Chain tracing and debugging
+  - Performance monitoring
+  - A/B testing capabilities
+  - Production observability
+
+### LangGraph Cloud
+- **Purpose**: Production deployment platform
+- **Documentation**: https://langchain-ai.github.io/langgraph/cloud/
+- **Features**:
+  - API deployment
+  - Scaling and management
+  - Enterprise integrations
+
+## Package-Specific Resources
+
+### @langchain/core
+- **GitHub**: https://github.com/langchain-ai/langchainjs/tree/main/langchain-core
+- **API Docs**: https://api.js.langchain.com/modules/langchain_core.html
+- **Purpose**: Base abstractions and utilities
+
+### @langchain/community
+- **GitHub**: https://github.com/langchain-ai/langchainjs/tree/main/libs/langchain-community
+- **API Docs**: https://api.js.langchain.com/modules/langchain_community.html
+- **Purpose**: Third-party integrations
+
+### langchain (main)
+- **GitHub**: https://github.com/langchain-ai/langchainjs/tree/main/langchain
+- **API Docs**: https://api.js.langchain.com/modules/langchain.html
+- **Purpose**: Main application building blocks
+
+### LangGraph.js
+- **GitHub**: https://github.com/langchain-ai/langgraphjs
+- **Documentation**: https://langchain-ai.github.io/langgraphjs/
+- **Purpose**: Stateful agent development
+
+## Troubleshooting Resources
+
+### Common Issues
+- **Version Compatibility**: Check package version matrix
+- **API Changes**: Review migration guides for major versions
+- **Performance Issues**: Optimization guides and best practices
+- **Integration Problems**: Specific integration documentation
+
+### Support Channels
+1. **GitHub Issues**: Bug reports and feature requests
+2. **Stack Overflow**: Community Q&A with `langchain` tag
+3. **Discord**: Real-time help from community and maintainers
+4. **Enterprise Support**: Commercial support options available
+
+## Contributing Resources
+
+### Development Setup
+- **Contributing Guide**: https://github.com/langchain-ai/langchainjs/blob/main/CONTRIBUTING.md
+- **Development Environment**: Local setup instructions
+- **Testing Guidelines**: How to write and run tests
+- **Code Standards**: Style guides and conventions
+
+### Community Contributions
+- **Feature Requests**: GitHub issues with enhancement label
+- **Pull Requests**: Code contribution process
+- **Documentation**: How to contribute to docs
+- **Translations**: Internationalization efforts
+
+## Security and Best Practices
+
+### Security Guidelines
+- **Security Policy**: https://github.com/langchain-ai/langchainjs/blob/main/SECURITY.md
+- **Vulnerability Reporting**: Responsible disclosure process
+- **API Key Management**: Best practices for credential handling
+- **Data Privacy**: Handling sensitive information
+
+### Performance Optimization
+- **Caching Strategies**: Memory and external caching
+- **Batch Processing**: Efficient API usage patterns
+- **Rate Limiting**: Managing API quotas and limits
+- **Monitoring**: Performance tracking and alerting
+
+## Staying Updated
+
+### Release Information
+- **Changelog**: Version release notes and changes
+- **Roadmap**: Future development plans
+- **Deprecation Notices**: Upcoming breaking changes
+- **Migration Guides**: Upgrading between versions
+
+### Communication Channels
+- **Blog**: Official announcements and updates
+- **Newsletter**: Regular updates and tips
+- **Webinars**: Educational content and deep dives
+- **Podcasts**: Interviews and discussions about LangChain

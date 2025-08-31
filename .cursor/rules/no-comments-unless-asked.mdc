@@ -1,0 +1,11 @@
+---
+alwaysApply: true
+description: Enforce that no comments are added unless explicitly requested by the user.
+---
+# No Comments Unless Requested — Always Apply
+
+Do not add comments in code, docs, or responses unless explicitly requested by the user.
+
+- Prefer self-documenting names and clear structure over comments.
+- Avoid narration or explanatory comments in code or messages.
+- If the user requests comments, add only what is requested.

@@ -1,0 +1,295 @@
+---
+alwaysApply: false
+description: LangChain.js core concepts, LCEL, chains, and agents from Context7 documentation
+globs: *.ts,*.tsx,*.js,*.jsx
+---
+
+# LangChain.js Core Concepts & LCEL
+
+## LangChain Expression Language (LCEL)
+
+### What is LCEL?
+LangChain Expression Language (LCEL) is a declarative way to easily compose chains together. It provides a common interface for many chains and LLMs, enabling flexible and powerful application development.
+
+### Basic LCEL Syntax
+```typescript
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+
+// Create components
+const prompt = ChatPromptTemplate.fromTemplate("Tell me a joke about {topic}");
+const model = new ChatOpenAI();
+
+// Chain using LCEL pipe operator
+const chain = prompt | model;
+
+// Execute
+const result = await chain.invoke({ topic: "cats" });
+```
+
+### LCEL Benefits
+- **Composability**: Easy to combine different components
+- **Streaming**: Built-in support for streaming responses
+- **Parallel Processing**: Can run independent tasks concurrently
+- **Fallbacks**: Easy to add fallback chains
+- **Tracing**: Built-in observability and debugging
+
+## Runnable Interface
+
+### Core Runnable Methods
+```typescript
+interface Runnable<Input, Output> {
+  // Synchronous execution
+  invoke(input: Input): Output;
+
+  // Asynchronous execution
+  invoke(input: Input): Promise<Output>;
+
+  // Streaming execution
+  stream(input: Input): AsyncIterable<Output>;
+
+  // Batch processing
+  batch(inputs: Input[]): Promise<Output[]>;
+}
+```
+
+### Runnable Types
+- **LLMs**: Language models (OpenAI, Anthropic, etc.)
+- **Chat Models**: Chat-based language models
+- **Prompts**: Prompt templates and formatters
+- **Output Parsers**: Parse model outputs
+- **Retrievers**: Document retrieval systems
+- **Tools**: External tools and APIs
+- **Chains**: Composed sequences of runnables
+
+## Chains
+
+### Types of Chains
+1. **LLMChain**: Basic prompt → LLM → output
+2. **SequentialChain**: Multiple chains in sequence
+3. **RetrievalQAChain**: Question answering with retrieval
+4. **ConversationalChain**: Multi-turn conversations
+5. **Custom Chains**: User-defined chain logic
+
+### Sequential Chain Example
+```typescript
+import { SequentialChain } from "langchain/chains";
+import { LLMChain } from "langchain/chains";
+import { ChatOpenAI } from "@langchain/openai";
+import { PromptTemplate } from "@langchain/core/prompts";
+
+const llm = new ChatOpenAI({ temperature: 0 });
+
+// Chain 1: Generate topic
+const topicChain = new LLMChain({
+  llm,
+  prompt: PromptTemplate.fromTemplate("Generate a creative topic about {subject}"),
+  outputKey: "topic"
+});
+
+// Chain 2: Write about topic
+const writingChain = new LLMChain({
+  llm,
+  prompt: PromptTemplate.fromTemplate("Write a short paragraph about {topic}"),
+  inputKey: "topic",
+  outputKey: "paragraph"
+});
+
+// Combine chains
+const overallChain = new SequentialChain({
+  chains: [topicChain, writingChain],
+  inputVariables: ["subject"],
+  outputVariables: ["topic", "paragraph"]
+});
+
+const result = await overallChain.call({ subject: "artificial intelligence" });
+```
+
+## Agents
+
+### What are Agents?
+Agents are systems that use LLMs to decide which actions to take and in what order. They can use tools, observe results, and iterate until completing a task.
+
+### Agent Types
+1. **Tool-calling Agents**: Use structured tool calling
+2. **ReAct Agents**: Reason about actions and observations
+3. **OpenAI Functions**: Leverage OpenAI's function calling
+4. **Custom Agents**: User-defined agent logic
+
+### Tool-Calling Agent Example
+```typescript
+import { ChatOpenAI } from "@langchain/openai";
+import { initializeAgentExecutorWithOptions } from "langchain/agents";
+import { SerpAPI } from "@langchain/community/tools/serpapi";
+import { Calculator } from "@langchain/community/tools/calculator";
+
+const llm = new ChatOpenAI({ temperature: 0 });
+
+const tools = [
+  new SerpAPI(process.env.SERPAPI_API_KEY),
+  new Calculator()
+];
+
+const executor = await initializeAgentExecutorWithOptions(
+  tools,
+  llm,
+  {
+    agentType: "openai-functions",
+    verbose: true
+  }
+);
+
+const result = await executor.call({
+  input: "What's the weather in Tokyo and what's 15 * 23?"
+});
+```
+
+## Converting Runnables to Tools
+
+### Why Convert Runnables to Tools?
+Convert complex LCEL chains into tools that agents can use, allowing agents to leverage sophisticated logic within their workflows.
+
+### Conversion Example
+```typescript
+import { RunnableConverter } from "langchain/tools/convert_to_tool";
+import { ChatPromptTemplate } from "@langchain/core/prompts";
+import { ChatOpenAI } from "@langchain/openai";
+import { StrOutputParser } from "@langchain/core/output_parsers";
+
+// Create a runnable chain
+const prompt = ChatPromptTemplate.fromTemplate("What is the capital of {country}?");
+const model = new ChatOpenAI();
+const outputParser = new StrOutputParser();
+
+const chain = prompt | model | outputParser;
+
+// Convert to tool
+const capitalTool = RunnableConverter(chain).to_tool();
+
+// Use in agent
+const tools = [capitalTool];
+const agent = await initializeAgentExecutorWithOptions(tools, llm, {
+  agentType: "openai-functions"
+});
+
+const result = await agent.call({
+  input: "What is the capital of France?"
+});
+```
+
+## Streaming and Async Processing
+
+### Streaming Responses
+```typescript
+// Stream individual tokens
+const stream = await chain.stream({ topic: "artificial intelligence" });
+
+for await (const chunk of stream) {
+  console.log(chunk.content);
+}
+```
+
+### Parallel Processing
+```typescript
+import { RunnableParallel } from "@langchain/core/runnables";
+
+// Run multiple chains in parallel
+const parallelChain = RunnableParallel({
+  joke: jokeChain,
+  fact: factChain,
+  quote: quoteChain
+});
+
+const results = await parallelChain.invoke({ topic: "cats" });
+// Results: { joke: "...", fact: "...", quote: "..." }
+```
+
+### Async Error Handling
+```typescript
+// Add fallbacks to chains
+const chainWithFallback = chain.withFallbacks({
+  fallbacks: [backupChain1, backupChain2]
+});
+
+try {
+  const result = await chainWithFallback.invoke(input);
+} catch (error) {
+  console.error("All chains failed:", error);
+}
+```
+
+## Best Practices
+
+### LCEL Best Practices
+1. **Use LCEL for composition**: Prefer LCEL pipes over manual chaining
+2. **Add error handling**: Use `.withFallbacks()` for resilience
+3. **Leverage streaming**: Implement streaming for better UX
+4. **Parallelize when possible**: Use `RunnableParallel` for independent tasks
+5. **Add tracing**: Enable LangSmith tracing for debugging
+
+### Agent Best Practices
+1. **Choose appropriate tools**: Select tools that complement the agent's capabilities
+2. **Handle tool errors**: Implement robust error handling in custom tools
+3. **Use appropriate agent types**: Match agent type to your use case
+4. **Limit iterations**: Set maximum iterations to prevent infinite loops
+5. **Test thoroughly**: Test agent behavior with various inputs
+
+### Performance Optimization
+1. **Use streaming**: Reduces perceived latency
+2. **Implement caching**: Cache expensive operations
+3. **Batch requests**: Process multiple inputs together
+4. **Optimize prompts**: Keep prompts concise and focused
+5. **Monitor usage**: Track token usage and costs
+
+## Common Patterns
+
+### RAG (Retrieval-Augmented Generation)
+```typescript
+import { RetrievalQAChain } from "langchain/chains";
+import { PineconeStore } from "@langchain/pinecone";
+import { OpenAIEmbeddings } from "@langchain/community/embeddings/openai";
+
+const vectorStore = await PineconeStore.fromExistingIndex(
+  new OpenAIEmbeddings(),
+  { pineconeIndex }
+);
+
+const chain = RetrievalQAChain.fromLLM(llm, vectorStore.asRetriever());
+const result = await chain.call({
+  query: "What is the main topic?"
+});
+```
+
+### Conversational Memory
+```typescript
+import { ConversationChain } from "langchain/chains";
+import { BufferMemory } from "langchain/memory";
+
+const chain = new ConversationChain({
+  llm,
+  memory: new BufferMemory()
+});
+
+const response1 = await chain.call({ input: "Hi, I'm Alice" });
+const response2 = await chain.call({ input: "What's my name?" });
+```
+
+### Structured Output
+```typescript
+import { StructuredOutputParser } from "langchain/output_parsers";
+import { z } from "zod";
+
+const parser = StructuredOutputParser.fromZodSchema(
+  z.object({
+    name: z.string(),
+    age: z.number(),
+    hobbies: z.array(z.string())
+  })
+);
+
+const chain = prompt | llm | parser;
+const result = await chain.invoke(input);
+// Result is typed and validated
+```
+
+This comprehensive guide covers the core concepts and patterns for building robust LangChain.js applications using LCEL, chains, and agents.
