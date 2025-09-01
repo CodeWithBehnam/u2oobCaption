@@ -51,6 +51,11 @@ const data = {
       url: "/dashboard/payment-gated",
       icon: IconSparkles,
     },
+    {
+      title: "AI Assistant",
+      url: "/dashboard/ai",
+      icon: IconBrandOpenai,
+    },
   ],
   navSecondary: [
     {
