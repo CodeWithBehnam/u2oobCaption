@@ -610,5 +610,905 @@
     "target": "26",
     "limit": "29",
     "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 69,
+    "header": "API Rate Limiting Strategy",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 70,
+    "header": "Error Handling Framework",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "16",
+    "limit": "19",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 71,
+    "header": "Data Privacy Policy",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "28",
+    "limit": "31",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 72,
+    "header": "User Experience Design Principles",
+    "type": "Research",
+    "status": "Done",
+    "target": "14",
+    "limit": "17",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 73,
+    "header": "Load Testing Scenarios",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 74,
+    "header": "Content Management System",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 75,
+    "header": "Vendor Assessment Process",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 76,
+    "header": "Knowledge Base Structure",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 77,
+    "header": "Change Management Protocol",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "13",
+    "limit": "16",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 78,
+    "header": "Automated Testing Framework",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 79,
+    "header": "User Interface Guidelines",
+    "type": "Visual",
+    "status": "In Process",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 80,
+    "header": "Terms of Service Agreement",
+    "type": "Legal",
+    "status": "Done",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 81,
+    "header": "Performance Optimization Plan",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "15",
+    "limit": "18",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 82,
+    "header": "User Journey Mapping",
+    "type": "Research",
+    "status": "Done",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 83,
+    "header": "Container Orchestration",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 84,
+    "header": "Data Retention Policies",
+    "type": "Legal",
+    "status": "Done",
+    "target": "12",
+    "limit": "15",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 85,
+    "header": "Microservices Architecture",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 86,
+    "header": "Incident Response Plan",
+    "type": "Planning",
+    "status": "Done",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 87,
+    "header": "Code Quality Metrics",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 88,
+    "header": "Privacy Impact Assessment",
+    "type": "Legal",
+    "status": "Done",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 89,
+    "header": "User Acceptance Testing",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 90,
+    "header": "Wireframe Designs",
+    "type": "Visual",
+    "status": "Done",
+    "target": "14",
+    "limit": "17",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 91,
+    "header": "Risk Assessment Matrix",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 92,
+    "header": "Database Indexing Strategy",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 93,
+    "header": "GDPR Compliance Checklist",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "16",
+    "limit": "19",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 94,
+    "header": "API Gateway Configuration",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 95,
+    "header": "Stakeholder Communication Plan",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 96,
+    "header": "Session Management",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "13",
+    "limit": "16",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 97,
+    "header": "Accessibility Audit",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 98,
+    "header": "Feature Flag Implementation",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 99,
+    "header": "User Research Findings",
+    "type": "Research",
+    "status": "In Process",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 100,
+    "header": "Container Security",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "15",
+    "limit": "18",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 101,
+    "header": "Contract Management System",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 102,
+    "header": "Event Logging Strategy",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 103,
+    "header": "Sprint Planning Template",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 104,
+    "header": "Data Validation Rules",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 105,
+    "header": "License Management",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 106,
+    "header": "Cache Management System",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "14",
+    "limit": "17",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 107,
+    "header": "User Persona Development",
+    "type": "Research",
+    "status": "In Process",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 108,
+    "header": "Load Balancer Configuration",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 109,
+    "header": "Intellectual Property Audit",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "16",
+    "limit": "19",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 110,
+    "header": "Real-time Notifications",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 111,
+    "header": "Training Materials",
+    "type": "Narrative",
+    "status": "In Process",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 112,
+    "header": "Code Deployment Pipeline",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 113,
+    "header": "Business Continuity Plan",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 114,
+    "header": "File Upload Validation",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "15",
+    "limit": "18",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 115,
+    "header": "Regulatory Reporting",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 116,
+    "header": "Database Replication",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 117,
+    "header": "User Story Mapping",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 118,
+    "header": "Security Audit Trail",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 119,
+    "header": "Terms and Conditions",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 120,
+    "header": "API Version Management",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 121,
+    "header": "Customer Journey Analytics",
+    "type": "Research",
+    "status": "In Process",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 122,
+    "header": "Infrastructure Monitoring",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "16",
+    "limit": "19",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 123,
+    "header": "Data Classification Policy",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 124,
+    "header": "Microservice Communication",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 125,
+    "header": "Project Kickoff Template",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 126,
+    "header": "Input Sanitization",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 127,
+    "header": "Export Control Compliance",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 128,
+    "header": "Distributed Caching",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 129,
+    "header": "User Behavior Analytics",
+    "type": "Research",
+    "status": "In Process",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 130,
+    "header": "Service Mesh Implementation",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 131,
+    "header": "Cookie Policy",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 132,
+    "header": "Message Queue Architecture",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 133,
+    "header": "Agile Methodology Guide",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 134,
+    "header": "Cross-Origin Policies",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 135,
+    "header": "Patent Portfolio Review",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 136,
+    "header": "Real-time Data Processing",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 137,
+    "header": "Customer Segmentation",
+    "type": "Research",
+    "status": "In Process",
+    "target": "16",
+    "limit": "19",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 138,
+    "header": "Backup Encryption",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 139,
+    "header": "Contract Negotiation Guidelines",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "28",
+    "limit": "31",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 140,
+    "header": "Serverless Functions",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 141,
+    "header": "Retrospective Process",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 142,
+    "header": "Password Policies",
+    "type": "Legal",
+    "status": "Done",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 143,
+    "header": "API Response Caching",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 144,
+    "header": "User Experience Metrics",
+    "type": "Research",
+    "status": "Done",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 145,
+    "header": "Certificate Management",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 146,
+    "header": "Non-Disclosure Agreements",
+    "type": "Legal",
+    "status": "Done",
+    "target": "17",
+    "limit": "20",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 147,
+    "header": "GraphQL Schema Design",
+    "type": "Technical content",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 148,
+    "header": "Market Research Report",
+    "type": "Research",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 149,
+    "header": "Task Estimation Matrix",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 150,
+    "header": "Session Storage Strategy",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 151,
+    "header": "Compliance Training",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "18",
+    "limit": "21",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 152,
+    "header": "WebSocket Implementation",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 153,
+    "header": "Competitive Analysis",
+    "type": "Research",
+    "status": "In Process",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 154,
+    "header": "Log Aggregation",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 155,
+    "header": "Partnership Agreements",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 156,
+    "header": "Progressive Web App",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 157,
+    "header": "Sprint Review Template",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 158,
+    "header": "Data Encryption Standards",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 159,
+    "header": "Trademark Guidelines",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "22",
+    "limit": "25",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 160,
+    "header": "OAuth Integration",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "24",
+    "limit": "27",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 161,
+    "header": "User Survey Design",
+    "type": "Research",
+    "status": "In Process",
+    "target": "19",
+    "limit": "22",
+    "reviewer": "Sarah Chen"
+  },
+  {
+    "id": 162,
+    "header": "Configuration Management",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "28",
+    "limit": "31",
+    "reviewer": "Maya Johnson"
+  },
+  {
+    "id": 163,
+    "header": "End User License Agreement",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "23",
+    "limit": "26",
+    "reviewer": "Carlos Rodriguez"
+  },
+  {
+    "id": 164,
+    "header": "Batch Processing System",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "25",
+    "limit": "28",
+    "reviewer": "Raj Patel"
+  },
+  {
+    "id": 165,
+    "header": "Requirements Gathering",
+    "type": "Planning",
+    "status": "In Process",
+    "target": "20",
+    "limit": "23",
+    "reviewer": "Leila Ahmadi"
+  },
+  {
+    "id": 166,
+    "header": "Audit Logging",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "26",
+    "limit": "29",
+    "reviewer": "Thomas Wilson"
+  },
+  {
+    "id": 167,
+    "header": "Copyright Policy",
+    "type": "Legal",
+    "status": "In Process",
+    "target": "21",
+    "limit": "24",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 168,
+    "header": "Single Sign-On Integration",
+    "type": "Technical content",
+    "status": "Done",
+    "target": "27",
+    "limit": "30",
+    "reviewer": "Eddie Lake"
   }
 ]
