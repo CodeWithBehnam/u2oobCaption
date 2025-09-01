@@ -40,7 +40,7 @@ export default function HeroSection() {
                                     <Button
                                         asChild
                                         size="lg"
-                                        variant="outline">
+                                        variant="neutral">
                                         <Link href="#link">
                                             <span className="text-nowrap">Watch Video</span>
                                         </Link>
