@@ -5,18 +5,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
 import OpenAI from "openai";
 
-// Initialize model with proper configuration following LangChain-JS best practices
-const model = new ChatOpenAI({
-  modelName: process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14",
-  temperature: 0,
-  openAIApiKey: process.env.OPENAI_API_KEY,
-  maxTokens: 1000,
-  timeout: 30000, // 30 second timeout
-  // Enable token tracking in callbacks
-  callbacks: [callbackHandler],
-  // Ensure token usage is included in responses
-  verbose: true,
-});
+// Model will be initialized after callback handler
 
 // Custom callback handler following LangChain-JS best practices
 class AICallbackHandler extends BaseCallbackHandler {
@@ -59,6 +48,19 @@ class AICallbackHandler extends BaseCallbackHandler {
 
 // Initialize callback handler
 const callbackHandler = new AICallbackHandler();
+
+// Initialize model with proper configuration following LangChain-JS best practices
+const model = new ChatOpenAI({
+  modelName: process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14",
+  temperature: 0,
+  openAIApiKey: process.env.OPENAI_API_KEY,
+  maxTokens: 1000,
+  timeout: 30000, // 30 second timeout
+  // Enable token tracking in callbacks
+  callbacks: [callbackHandler],
+  // Ensure token usage is included in responses
+  verbose: true,
+});
 
 // Initialize direct OpenAI client for token tracking
 const openaiClient = new OpenAI({
@@ -204,45 +206,43 @@ export async function generateCompletionWithTokens(input: string): Promise<{
     console.log("   Input length:", input.length, "characters");
     console.log("   Model:", process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14");
 
-    // Get the AI response with metadata
-    const modelResponse = await model.invoke([
-      ["system", "You are a helpful assistant. Provide clear, accurate, and concise responses."],
-      ["human", input]
-    ]);
+    // Use direct OpenAI API call to get token usage
+    console.log("📡 Making direct OpenAI API call for token tracking");
+    const openaiResponse = await openaiClient.chat.completions.create({
+      model: process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14",
+      messages: [
+        { role: "system", content: "You are a helpful assistant. Provide clear, accurate, and concise responses." },
+        { role: "user", content: input }
+      ],
+      temperature: 0,
+      max_tokens: 1000,
+    });
 
     const responseTime = Date.now() - startTime;
-    const text = modelResponse.content as string;
+    const text = openaiResponse.choices[0]?.message?.content || "";
+    const finishReason = openaiResponse.choices[0]?.finish_reason || "stop";
 
-    // Extract token usage from the response
-    const tokenUsage = extractTokenUsage(modelResponse);
+    // Get actual token usage from OpenAI response
+    const usage = openaiResponse.usage;
+    const tokenUsage = {
+      inputTokens: usage?.prompt_tokens || 0,
+      outputTokens: usage?.completion_tokens || 0,
+      totalTokens: usage?.total_tokens || 0
+    };
 
     console.log("✅ AI response successful:");
     console.log("   Response time:", responseTime, "ms");
     console.log("   Token usage:", tokenUsage);
     console.log("   Text length:", text.length, "characters");
-    console.log("   Finish reason:", modelResponse.response_metadata?.finish_reason || "stop");
-
-    // If no tokens found, provide estimation
-    let finalTokens = tokenUsage;
-    if (tokenUsage.totalTokens === 0) {
-      console.log("⚠️  No token usage found, using estimation");
-      const estimatedInputTokens = Math.ceil(input.length / 4);
-      const estimatedOutputTokens = Math.ceil(text.length / 4);
-      finalTokens = {
-        inputTokens: estimatedInputTokens,
-        outputTokens: estimatedOutputTokens,
-        totalTokens: estimatedInputTokens + estimatedOutputTokens
-      };
-      console.log("   Estimated tokens:", finalTokens);
-    }
+    console.log("   Finish reason:", finishReason);
 
     return {
       text,
-      tokensUsed: finalTokens.totalTokens,
-      inputTokens: finalTokens.inputTokens,
-      outputTokens: finalTokens.outputTokens,
+      tokensUsed: tokenUsage.totalTokens,
+      inputTokens: tokenUsage.inputTokens,
+      outputTokens: tokenUsage.outputTokens,
       responseTime,
-      finishReason: modelResponse.response_metadata?.finish_reason || "stop"
+      finishReason
     };
 
   } catch (error: any) {
