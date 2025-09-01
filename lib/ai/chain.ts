@@ -51,12 +51,12 @@ const callbackHandler = new AICallbackHandler();
 
 // Initialize model with proper configuration following LangChain-JS best practices
 const model = new ChatOpenAI({
-  modelName: process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14",
+  modelName: process.env.AI_MODEL || "gpt-5-2025-08-07",
   temperature: 0,
   openAIApiKey: process.env.OPENAI_API_KEY,
   maxTokens: 1000,
   timeout: 30000, // 30 second timeout
-  // Enable token tracking in callbacks
+  // Enable token tracking in callbacks (required for token usage)
   callbacks: [callbackHandler],
   // Ensure token usage is included in responses
   verbose: true,
@@ -68,8 +68,8 @@ const openaiClient = new OpenAI({
 });
 
 // Debug logging
-console.log("🤖 LangChain-JS AI Configuration:");
-console.log("   Model:", process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14");
+console.log("🤖 LangChain-JS AI Configuration (GPT-5 model):");
+console.log("   Model:", process.env.AI_MODEL || "gpt-5-2025-08-07");
 console.log("   API Key exists:", !!process.env.OPENAI_API_KEY);
 console.log("   Temperature:", 0);
 console.log("   Max Tokens:", 1000);
@@ -118,45 +118,68 @@ const chainWithMetadata = RunnableSequence.from([
   runName: "EnhancedAIChain"
 });
 
-// Token extraction utility following LangChain-JS patterns
+// Token extraction utility following LangChain-JS best practices from documentation
 function extractTokenUsage(response: any): { inputTokens: number; outputTokens: number; totalTokens: number } {
-  console.log("🔍 Token extraction debug:");
+  console.log("🔍 LangChain-JS Token extraction (following documentation patterns):");
   console.log("   Response type:", typeof response);
   console.log("   Response keys:", Object.keys(response || {}));
-  console.log("   Response structure:", JSON.stringify(response, null, 2).substring(0, 500));
 
-  // Try different possible locations for token usage in LangChain-JS OpenAI responses
-  const usage = response?.usage ||
-                response?.response_metadata?.usage ||
-                response?.llmOutput?.tokenUsage ||
-                response?.llmOutput?.usage;
-
-  console.log("   Usage object found:", !!usage);
-  if (usage) {
-    console.log("   Usage details:", usage);
-  }
-
-  if (usage) {
-    return {
-      inputTokens: usage.prompt_tokens || usage.input_tokens || 0,
-      outputTokens: usage.completion_tokens || usage.output_tokens || 0,
-      totalTokens: usage.total_tokens || (usage.prompt_tokens + usage.completion_tokens) || 0
-    };
-  }
-
-  // Try to get usage from response_metadata
+  // Primary method: response_metadata.tokenUsage (LangChain-JS ChatOpenAI pattern)
   const responseMetadata = response?.response_metadata;
   if (responseMetadata) {
-    console.log("   Response metadata:", responseMetadata);
-    const metaUsage = responseMetadata.usage || responseMetadata.tokenUsage;
-    if (metaUsage) {
+    console.log("   Found response_metadata:", Object.keys(responseMetadata));
+
+    // Check for usage_metadata (streaming pattern from docs)
+    const usageMetadata = responseMetadata.usage_metadata;
+    if (usageMetadata) {
+      console.log("   Found usage_metadata (streaming pattern):", usageMetadata);
       return {
-        inputTokens: metaUsage.prompt_tokens || metaUsage.input_tokens || 0,
-        outputTokens: metaUsage.completion_tokens || metaUsage.output_tokens || 0,
-        totalTokens: metaUsage.total_tokens || 0
+        inputTokens: usageMetadata.input_tokens || 0,
+        outputTokens: usageMetadata.output_tokens || 0,
+        totalTokens: usageMetadata.total_tokens || 0
+      };
+    }
+
+    // Check for tokenUsage (callback pattern from docs)
+    const tokenUsage = responseMetadata.tokenUsage;
+    if (tokenUsage) {
+      console.log("   Found tokenUsage (callback pattern):", tokenUsage);
+      return {
+        inputTokens: tokenUsage.promptTokens || tokenUsage.inputTokens || 0,
+        outputTokens: tokenUsage.completionTokens || tokenUsage.outputTokens || 0,
+        totalTokens: tokenUsage.totalTokens || 0
       };
     }
   }
+
+  // Secondary method: llmOutput.tokenUsage (callback pattern from docs)
+  const llmOutput = response?.llmOutput;
+  if (llmOutput) {
+    console.log("   Found llmOutput:", Object.keys(llmOutput));
+
+    const tokenUsage = llmOutput.tokenUsage;
+    if (tokenUsage) {
+      console.log("   Found llmOutput.tokenUsage (callback pattern):", tokenUsage);
+      return {
+        inputTokens: tokenUsage.promptTokens || tokenUsage.inputTokens || 0,
+        outputTokens: tokenUsage.completionTokens || tokenUsage.outputTokens || 0,
+        totalTokens: tokenUsage.totalTokens || 0
+      };
+    }
+  }
+
+  // Tertiary method: Direct usage object (fallback)
+  const directUsage = response?.usage;
+  if (directUsage) {
+    console.log("   Found direct usage object:", directUsage);
+    return {
+      inputTokens: directUsage.prompt_tokens || directUsage.input_tokens || 0,
+      outputTokens: directUsage.completion_tokens || directUsage.output_tokens || 0,
+      totalTokens: directUsage.total_tokens || 0
+    };
+  }
+
+  console.log("   ⚠️ No token usage found using LangChain-JS patterns, checking for any token data...");
 
   // Last resort: try to find any token-related data
   if (response && typeof response === 'object') {
@@ -165,16 +188,15 @@ function extractTokenUsage(response: any): { inputTokens: number; outputTokens: 
         console.log("   Found token-related data:", key, value);
         const tokenData = value as any;
         return {
-          inputTokens: tokenData.prompt_tokens || tokenData.input_tokens || 0,
-          outputTokens: tokenData.completion_tokens || tokenData.output_tokens || 0,
-          totalTokens: tokenData.total_tokens || 0
+          inputTokens: tokenData.prompt_tokens || tokenData.inputTokens || tokenData.input_tokens || 0,
+          outputTokens: tokenData.completion_tokens || tokenData.outputTokens || tokenData.output_tokens || 0,
+          totalTokens: tokenData.total_tokens || tokenData.totalTokens || 0
         };
       }
     }
   }
 
-  console.log("   No token usage found, using fallback estimation");
-  // Fallback estimation if no usage data available
+  console.log("   ❌ No token usage found, using zero values");
   return {
     inputTokens: 0,
     outputTokens: 0,
@@ -202,39 +224,64 @@ export async function generateCompletionWithTokens(input: string): Promise<{
       throw new Error("OpenAI API key is not configured. Please set OPENAI_API_KEY environment variable.");
     }
 
-    console.log("🚀 Making AI request with LangChain-JS:");
+    console.log("🚀 Making AI request with LangChain-JS (following documentation patterns):");
     console.log("   Input length:", input.length, "characters");
-    console.log("   Model:", process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14");
+    console.log("   Model:", process.env.AI_MODEL || "gpt-5-2025-08-07");
 
-    // Use direct OpenAI API call to get token usage
-    console.log("📡 Making direct OpenAI API call for token tracking");
-    const openaiResponse = await openaiClient.chat.completions.create({
-      model: process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14",
-      messages: [
-        { role: "system", content: "You are a helpful assistant. Provide clear, accurate, and concise responses." },
-        { role: "user", content: input }
-      ],
-      temperature: 0,
-      max_tokens: 1000,
-    });
+    // Use LangChain-JS model with proper callback configuration for token tracking
+    console.log("🔄 Using LangChain-JS ChatOpenAI with callback token tracking");
+    const modelResponse = await model.invoke([
+      ["system", "You are a helpful assistant. Provide clear, accurate, and concise responses."],
+      ["human", input]
+    ]);
 
     const responseTime = Date.now() - startTime;
-    const text = openaiResponse.choices[0]?.message?.content || "";
-    const finishReason = openaiResponse.choices[0]?.finish_reason || "stop";
+    const text = modelResponse.content as string;
 
-    // Get actual token usage from OpenAI response
-    const usage = openaiResponse.usage;
-    const tokenUsage = {
-      inputTokens: usage?.prompt_tokens || 0,
-      outputTokens: usage?.completion_tokens || 0,
-      totalTokens: usage?.total_tokens || 0
-    };
+    // Extract token usage using LangChain-JS patterns from documentation
+    const tokenUsage = extractTokenUsage(modelResponse);
+    const finishReason = modelResponse.response_metadata?.finish_reason || "stop";
 
-    console.log("✅ AI response successful:");
+    console.log("✅ LangChain-JS AI response successful:");
     console.log("   Response time:", responseTime, "ms");
-    console.log("   Token usage:", tokenUsage);
+    console.log("   Token usage (LangChain-JS patterns):", tokenUsage);
     console.log("   Text length:", text.length, "characters");
     console.log("   Finish reason:", finishReason);
+
+    // If no tokens found through LangChain patterns, try direct OpenAI as fallback
+    if (tokenUsage.totalTokens === 0) {
+      console.log("⚠️ No token data found via LangChain-JS, trying direct OpenAI API as fallback");
+      try {
+        const openaiResponse = await openaiClient.chat.completions.create({
+          model: process.env.AI_MODEL || "gpt-5-2025-08-07",
+          messages: [
+            { role: "system", content: "You are a helpful assistant. Provide clear, accurate, and concise responses." },
+            { role: "user", content: input }
+          ],
+          temperature: 0,
+          max_tokens: 1000,
+        });
+
+        const usage = openaiResponse.usage;
+        const fallbackTokens = {
+          inputTokens: usage?.prompt_tokens || 0,
+          outputTokens: usage?.completion_tokens || 0,
+          totalTokens: usage?.total_tokens || 0
+        };
+
+        console.log("   Fallback token usage (direct OpenAI):", fallbackTokens);
+        return {
+          text,
+          tokensUsed: fallbackTokens.totalTokens,
+          inputTokens: fallbackTokens.inputTokens,
+          outputTokens: fallbackTokens.outputTokens,
+          responseTime,
+          finishReason
+        };
+      } catch (fallbackError) {
+        console.log("   ❌ Fallback OpenAI call also failed:", fallbackError);
+      }
+    }
 
     return {
       text,
