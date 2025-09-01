@@ -3,6 +3,7 @@ import { StringOutputParser } from "@langchain/core/output_parsers";
 import { RunnablePassthrough, RunnableSequence } from "@langchain/core/runnables";
 import { ChatOpenAI } from "@langchain/openai";
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base";
+import OpenAI from "openai";
 
 // Initialize model with proper configuration following LangChain-JS best practices
 const model = new ChatOpenAI({
@@ -11,6 +12,10 @@ const model = new ChatOpenAI({
   openAIApiKey: process.env.OPENAI_API_KEY,
   maxTokens: 1000,
   timeout: 30000, // 30 second timeout
+  // Enable token tracking in callbacks
+  callbacks: [callbackHandler],
+  // Ensure token usage is included in responses
+  verbose: true,
 });
 
 // Custom callback handler following LangChain-JS best practices
@@ -55,6 +60,11 @@ class AICallbackHandler extends BaseCallbackHandler {
 // Initialize callback handler
 const callbackHandler = new AICallbackHandler();
 
+// Initialize direct OpenAI client for token tracking
+const openaiClient = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
 // Debug logging
 console.log("🤖 LangChain-JS AI Configuration:");
 console.log("   Model:", process.env.AI_MODEL || "gpt-4.1-nano-2025-04-14");
@@ -62,6 +72,7 @@ console.log("   API Key exists:", !!process.env.OPENAI_API_KEY);
 console.log("   Temperature:", 0);
 console.log("   Max Tokens:", 1000);
 console.log("   Callbacks enabled:", true);
+console.log("   Direct OpenAI client:", !!openaiClient);
 
 // Create prompt template following LCEL best practices
 const prompt = ChatPromptTemplate.fromMessages([
@@ -211,11 +222,25 @@ export async function generateCompletionWithTokens(input: string): Promise<{
     console.log("   Text length:", text.length, "characters");
     console.log("   Finish reason:", modelResponse.response_metadata?.finish_reason || "stop");
 
+    // If no tokens found, provide estimation
+    let finalTokens = tokenUsage;
+    if (tokenUsage.totalTokens === 0) {
+      console.log("⚠️  No token usage found, using estimation");
+      const estimatedInputTokens = Math.ceil(input.length / 4);
+      const estimatedOutputTokens = Math.ceil(text.length / 4);
+      finalTokens = {
+        inputTokens: estimatedInputTokens,
+        outputTokens: estimatedOutputTokens,
+        totalTokens: estimatedInputTokens + estimatedOutputTokens
+      };
+      console.log("   Estimated tokens:", finalTokens);
+    }
+
     return {
       text,
-      tokensUsed: tokenUsage.totalTokens,
-      inputTokens: tokenUsage.inputTokens,
-      outputTokens: tokenUsage.outputTokens,
+      tokensUsed: finalTokens.totalTokens,
+      inputTokens: finalTokens.inputTokens,
+      outputTokens: finalTokens.outputTokens,
       responseTime,
       finishReason: modelResponse.response_metadata?.finish_reason || "stop"
     };
